@@ -1,0 +1,3 @@
+_target_: rl4co.models.POMO
+num_augment: 8
+baseline: shared

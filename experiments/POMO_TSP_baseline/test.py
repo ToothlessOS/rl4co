@@ -19,7 +19,7 @@ model = POMO(
 )
 
 ckpt = POMO.load_from_checkpoint(
-    "checkpoints/last-v1.ckpt", strict=False, weights_only=False
+    "checkpoints/last.ckpt", strict=False, weights_only=False
 )
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

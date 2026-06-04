@@ -1,0 +1,40 @@
+# @package _global_
+
+defaults:
+  - override /model: am
+  - override /env: tsp
+  - override /callbacks: default
+  - override /trainer: default
+  - override /logger: wandb
+
+env:
+  generator_params:
+    num_loc: 50
+
+logger:
+  wandb:
+    project: "rl4co"
+    tags: ["am", "tsp", "nrp_eval"]
+    group: "am-tsp50"
+    name: "am-tsp50"
+
+model:
+  batch_size: 512
+  train_data_size: 1_280_000
+  val_data_size: 10_000
+  test_data_size: 10_000
+  optimizer_kwargs:
+    lr: 1e-4
+
+trainer:
+  max_epochs: 100
+
+seed: 1234
+solver_name: am
+solver:
+  am:
+    decode_type: greedy
+
+evaluate:
+  method: greedy
+  num_instances: 1000

@@ -1,0 +1,32 @@
+# @package _global_
+
+defaults:
+  - override /env: tsp
+  - override /callbacks: default
+  - override /trainer: default
+  - override /logger: wandb
+
+env:
+  generator_params:
+    num_loc: 100
+
+logger:
+  wandb:
+    project: "rl4co"
+    tags: ["ortools", "tsp", "nrp_eval"]
+    group: "ortools-tsp100"
+    name: "ortools-tsp100"
+
+trainer:
+  max_epochs: 0
+
+seed: 1234
+solver_name: ortools_tsp
+solver:
+  ortools_tsp:
+    max_runtime_s: 1.0
+    two_opt_iters: 50
+
+evaluate:
+  method: greedy
+  num_instances: 1000

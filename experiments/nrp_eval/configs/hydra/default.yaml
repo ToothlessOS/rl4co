@@ -1,0 +1,7 @@
+run:
+  dir: ${paths.output_dir}/${experiment.name}/${now:%Y-%m-%d_%H-%M-%S}
+sweep:
+  dir: ${paths.output_dir}/${experiment.name}/sweeps/${now:%Y-%m-%d_%H-%M-%S}
+  subdir: ${hydra.job.name}
+job_logging:
+  version: 1

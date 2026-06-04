@@ -1,0 +1,32 @@
+# @package _global_
+
+defaults:
+  - override /env: tsp
+  - override /callbacks: default
+  - override /trainer: default
+  - override /logger: wandb
+
+env:
+  generator_params:
+    num_loc: 100
+
+logger:
+  wandb:
+    project: "rl4co"
+    tags: ["builtin", "tsp", "nrp_eval"]
+    group: "builtin-tsp100"
+    name: "builtin-tsp100"
+
+trainer:
+  max_epochs: 0
+
+seed: 1234
+solver_name: builtin_solve
+solver:
+  builtin_solve:
+    max_runtime_s: 10.0
+    num_procs: 1
+
+evaluate:
+  method: greedy
+  num_instances: 1000

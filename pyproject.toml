@@ -71,6 +71,7 @@ dependencies = [
     "torchrl>=0.6.0",
     "wandb",
     "tensorboard>=2.20.0",
+    "ortools>=9.15.6755",
 ]
 
 [project.optional-dependencies]
