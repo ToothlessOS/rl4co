@@ -1,0 +1,23 @@
+defaults:
+  - _self_
+  - callbacks: default
+  - hydra: default
+  - logger: wandb
+  - trainer: default
+  - paths: default
+  - extras: default
+  - model: pomo
+  - env: tsp
+  - experiment: nrp_eval/pomo_tsp
+
+mode: ${oc.env:NRP_MODE,train}
+solver_name: pomo
+seed: 42
+run_id: null
+train: True
+test: True
+
+paths:
+  data_dir: ${oc.env:NRP_DATA_DIR,data}
+  output_dir: ${oc.env:NRP_OUTPUT_DIR,results}
+  root_dir: ${oc.env:NRP_ROOT_DIR,.}

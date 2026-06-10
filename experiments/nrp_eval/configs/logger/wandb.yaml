@@ -1,0 +1,5 @@
+wandb:
+  _target_: lightning.pytorch.loggers.wandb.WandbLogger
+  project: "rl4co"
+  save_dir: "${paths.output_dir}"
+  offline: false

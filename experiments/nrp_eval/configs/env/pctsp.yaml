@@ -1,0 +1,8 @@
+_target_: rl4co.envs.PCTSPEnv
+name: pctsp
+generator_params:
+  num_loc: 20
+  loc_distribution: uniform
+data_dir: ${paths.data_dir}/pctsp
+val_file: pctsp${env.generator_params.num_loc}_val_seed4321.npz
+test_file: pctsp${env.generator_params.num_loc}_test_seed1234.npz

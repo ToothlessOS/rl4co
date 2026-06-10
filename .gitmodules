@@ -1,0 +1,3 @@
+[submodule "experiments/learn_decompose_eval/cvrp-decomposition"]
+	path = experiments/learn_decompose_eval/cvrp-decomposition
+	url = https://github.com/alberto-santini/cvrp-decomposition

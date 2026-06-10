@@ -1,0 +1,2 @@
+_target_: rl4co.models.MatNet
+baseline: shared
