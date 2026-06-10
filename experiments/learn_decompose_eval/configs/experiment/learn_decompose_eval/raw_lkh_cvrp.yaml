@@ -1,0 +1,34 @@
+# @package _global_
+
+defaults:
+  - override /env: cvrp
+  - override /callbacks: default
+  - override /trainer: default
+  - override /logger: wandb
+
+env:
+  generator_params:
+    num_loc: 200
+
+logger:
+  wandb:
+    project: "nrp-learn-decompose"
+    tags: ["raw-lkh3", "cvrp", "learn_decompose_eval"]
+    group: "raw-lkh3-cvrp${env.generator_params.num_loc}"
+    name: "raw-lkh3-cvrp${env.generator_params.num_loc}-seed${seed}"
+
+trainer:
+  max_epochs: 0
+
+seed: 1234
+solver_name: raw_lkh_cvrp
+solver:
+  raw_lkh_cvrp:
+    max_runtime_s: 120.0
+    num_workers: 4
+    seed: 1
+    trace_level: 0
+
+evaluate:
+  method: greedy
+  num_instances: 100

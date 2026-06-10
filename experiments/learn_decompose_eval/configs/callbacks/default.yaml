@@ -1,0 +1,14 @@
+model_checkpoint:
+  _target_: lightning.pytorch.callbacks.ModelCheckpoint
+  monitor: "val/reward"
+  mode: max
+  save_top_k: 1
+  save_last: True
+  filename: "epoch_{epoch:03d}"
+
+model_summary:
+  _target_: lightning.pytorch.callbacks.RichModelSummary
+  max_depth: -1
+
+rich_progress_bar:
+  _target_: lightning.pytorch.callbacks.RichProgressBar

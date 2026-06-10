@@ -182,3 +182,9 @@ outputs/
 
 # HGS-CVRP for cvrp local search
 HGS-CVRP/
+
+# LKH binary
+experiments/learn_decompose_eval/LKH-3.0.14/LKH
+experiments/learn_decompose_eval/LKH-3.0.14/whizzkids96.atsp
+experiments/learn_decompose_eval/LKH-3.0.14/whizzkids96.par
+experiments/learn_decompose_eval/LKH-3.0.14/pr2392.par

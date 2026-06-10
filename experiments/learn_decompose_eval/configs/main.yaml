@@ -1,0 +1,22 @@
+defaults:
+  - _self_
+  - callbacks: default
+  - hydra: default
+  - logger: wandb
+  - trainer: default
+  - paths: default
+  - extras: default
+  - env: cvrp
+  - experiment: learn_decompose_eval/raw_lkh_cvrp
+
+mode: ${oc.env:LDE_MODE,eval}
+solver_name: raw_lkh_cvrp
+seed: 1234
+run_id: null
+train: False
+test: True
+
+paths:
+  data_dir: ${oc.env:LDE_DATA_DIR,${paths.root_dir}/data}
+  output_dir: ${oc.env:LDE_OUTPUT_DIR,${paths.root_dir}/results}
+  root_dir: ${oc.env:LDE_ROOT_DIR,${oc.env:PROJECT_ROOT,.}}

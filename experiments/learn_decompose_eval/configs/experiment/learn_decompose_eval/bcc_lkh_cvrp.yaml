@@ -1,0 +1,39 @@
+# @package _global_
+
+defaults:
+  - override /env: cvrp
+  - override /callbacks: default
+  - override /trainer: default
+  - override /logger: wandb
+
+env:
+  generator_params:
+    num_loc: 200
+
+logger:
+  wandb:
+    project: "nrp-learn-decompose"
+    tags: ["bcc-lkh3", "cvrp", "learn_decompose_eval"]
+    group: "bcc-lkh3-cvrp${env.generator_params.num_loc}"
+    name: "bcc-lkh3-cvrp${env.generator_params.num_loc}-seed${seed}"
+
+trainer:
+  max_epochs: 0
+
+seed: 1234
+solver_name: bcc_lkh_cvrp
+solver:
+  bcc_lkh_cvrp:
+    max_total_s: 120.0
+    min_restart_interval_s: 10.0
+    population_size: 4
+    max_subs_time_fraction: 0.3
+    num_workers: 4
+    target_max_subproblem_size: 200
+    random_state: 0
+    seed: 1
+    trace_level: 0
+
+evaluate:
+  method: greedy
+  num_instances: 100

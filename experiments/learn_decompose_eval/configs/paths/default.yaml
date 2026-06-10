@@ -1,0 +1,5 @@
+root_dir: ${oc.env:PROJECT_ROOT,${oc.env:LDE_ROOT_DIR,.}}
+data_dir: ${paths.root_dir}/data
+output_dir: ${paths.root_dir}/results
+log_dir: ${paths.output_dir}/logs
+work_dir: ${paths.root_dir}
