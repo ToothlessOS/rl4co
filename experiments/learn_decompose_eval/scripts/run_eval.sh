@@ -24,7 +24,7 @@ export PYTHONPATH="$REPO_ROOT/experiments/nrp_eval:${PYTHONPATH:-}"
 
 NUM_LOC="${1:-200}"
 SOLVER="${SOLVER:-raw_lkh_cvrp}"
-NUM_INSTANCES="${NUM_INSTANCES:-100}"
+NUM_INSTANCES="${NUM_INSTANCES:-10}"
 SEED="${SEED:-1234}"
 
 cd "$REPO_ROOT"

@@ -24,11 +24,11 @@ seed: 1234
 solver_name: raw_lkh_cvrp
 solver:
   raw_lkh_cvrp:
-    max_runtime_s: 120.0
+    max_runtime_s: 300.0
     num_workers: 4
     seed: 1
     trace_level: 0
 
 evaluate:
   method: greedy
-  num_instances: 100
+  num_instances: 10

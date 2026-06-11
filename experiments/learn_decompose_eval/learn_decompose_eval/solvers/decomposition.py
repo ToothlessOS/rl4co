@@ -10,10 +10,9 @@ Algorithm:
     3. k-means cluster the route barycentres into ``k = ceil(nbClients /
        targetMaxSpCustomers)`` groups.
     4. For each cluster, build a subproblem containing the union of customers
-       in the routes assigned to that cluster.
-    5. (LDE divergence from C++) Enforce ``sum(demand) <= vehicle_capacity``
-       per cluster via a greedy walk-and-split. The original HGS sub-GA
-       respected capacity implicitly; LKH-3 needs a feasible sub-CVRP.
+       in the routes assigned to that cluster. The subproblem also carries
+       the parent routes themselves so the sub-LKH-3 can be warm-started
+       with them.
 
 Reference: Santini, Alberto, et al. "Decomposition strategies for vehicle
 routing problems." _Computers & Operations Research_ (2023).
@@ -43,6 +42,16 @@ class Subproblem:
         demand: ``[n]`` numpy array of customer demands (integer, unnormalized)
         capacity: vehicle capacity
         depot_xy: ``[2]`` numpy array of the depot coordinates
+        parent_routes: list of parent routes assigned to this cluster.
+            Each parent route is a list of 1-indexed Uchoa customer ids
+            (``2..num_loc+1`` in the subproblem's local id space). The
+            depot ``1`` is NOT included; the tour writer adds depot
+            markers. Empty (subproblem is the empty set) is not
+            allowed.
+        n_parent_routes: number of parent routes in this cluster.
+            Used as ``SALESMEN`` for the subproblem LKH-3 invocation
+            and to keep the warm-start tour's DIMENSION aligned with
+            the LKH-3 problem expansion.
     """
 
     customer_ids: list[int]
@@ -50,6 +59,8 @@ class Subproblem:
     demand: np.ndarray
     capacity: int
     depot_xy: np.ndarray
+    parent_routes: list[list[int]] = field(default_factory=list)
+    n_parent_routes: int = 0
 
     @property
     def num_loc(self) -> int:
@@ -74,6 +85,13 @@ class BarycentreClusteringDecomposer:
     """Decompose a CVRP master solution into k subproblems via k-means on
     route barycentres.
 
+    The resulting subproblems preserve the **parent route structure**:
+    each ``Subproblem`` carries the list of parent routes that were
+    assigned to its cluster. The orchestrator uses this to warm-start
+    sub-LKH-3 with the parent's already-feasible routes. Per-route
+    capacity-feasibility is therefore inherited from the parent — no
+    post-hoc capacity split is needed (and none is performed).
+
     Args:
         target_max_subproblem_size: target maximum number of customers per
             subproblem (the literature default is 200, matching
@@ -82,9 +100,6 @@ class BarycentreClusteringDecomposer:
             ``KMeans.h:max_iter=100``).
         kmeans_tol: convergence tolerance in coordinate shift (default 1e-2,
             matching ``KMeans.h:different()``).
-        enforce_capacity: if True, greedily split clusters whose total demand
-            exceeds ``vehicle_capacity``. This is a deliberate divergence
-            from the C++ port (see module docstring).
         random_state: random seed for k-means++ init.
     """
 
@@ -93,13 +108,11 @@ class BarycentreClusteringDecomposer:
         target_max_subproblem_size: int = 200,
         kmeans_max_iter: int = 100,
         kmeans_tol: float = 1e-2,
-        enforce_capacity: bool = True,
         random_state: int = 0,
     ):
         self.target_max_subproblem_size = target_max_subproblem_size
         self.kmeans_max_iter = kmeans_max_iter
         self.kmeans_tol = kmeans_tol
-        self.enforce_capacity = enforce_capacity
         self.random_state = random_state
 
     def decompose(
@@ -117,8 +130,9 @@ class BarycentreClusteringDecomposer:
 
         Returns:
             A list of ``Subproblem`` objects. Sum of customers across
-            subproblems equals ``num_loc``; each subproblem is feasible (if
-            ``enforce_capacity`` is True).
+            subproblems equals ``num_loc``; each subproblem inherits
+            per-route capacity-feasibility from the parent routes
+            (carried in ``Subproblem.parent_routes``).
         """
         if td.batch_size != torch.Size([]) and len(td.batch_size) > 0:
             if len(td.batch_size) > 1:
@@ -200,6 +214,18 @@ class BarycentreClusteringDecomposer:
             all_ids = sorted({c for r in routes for c in r})
             if not all_ids:
                 return []
+            # All parent routes survive into the single subproblem so
+            # the warm-start can replay them verbatim. Map each
+            # parent route's 0-indexed customer ids (in the
+            # original problem space) to subproblem-local 1-indexed
+            # Uchoa ids (2..num_loc+1).
+            all_id_to_local = {cid: idx + 2 for idx, cid in enumerate(all_ids)}
+            all_ids_set = set(all_ids)
+            parent_routes_1indexed = [
+                [all_id_to_local[c] for c in r if c in all_ids_set]
+                for r in routes
+                if any(c in all_ids_set for c in r)
+            ]
             subproblems = [
                 Subproblem(
                     customer_ids=all_ids,
@@ -207,6 +233,8 @@ class BarycentreClusteringDecomposer:
                     demand=demand_int[all_ids],
                     capacity=capacity,
                     depot_xy=depot_xy.numpy(),
+                    parent_routes=parent_routes_1indexed,
+                    n_parent_routes=len(parent_routes_1indexed),
                 )
             ]
         else:
@@ -233,95 +261,61 @@ class BarycentreClusteringDecomposer:
                 cluster_to_routes[cursor % k].append(r_idx)
                 cursor += 1
 
-            # Step 4: build subproblems.
+            # Step 4: build subproblems, preserving the parent route
+            # structure so the sub-LKH-3 can be warm-started with it.
             for cluster_routes in cluster_to_routes:
                 if not cluster_routes:
                     continue
                 cust_ids = sorted({c for r in cluster_routes for c in routes[r]})
                 if not cust_ids:
                     continue
+                # Build the parent_routes list in **subproblem-local**
+                # 1-indexed Uchoa customer ids, with the depot
+                # implicit. The tour writer
+                # (write_subproblem_initial_tour) will add depot
+                # markers between routes and validate the id range
+                # 2..num_loc+1 against the subproblem.
+                #
+                # ``routes[r]`` is 0-indexed (depot stripped) in the
+                # **original** problem space. To get a subproblem-
+                # local 1-indexed Uchoa id: find the position of
+                # the customer in this cluster's ``cust_ids`` and
+                # add 2.
+                cust_id_to_local = {cid: idx + 2 for idx, cid in enumerate(cust_ids)}
+                cust_id_set = set(cust_ids)
+                parent_routes_1indexed: list[list[int]] = []
+                for r in cluster_routes:
+                    route_local = [
+                        cust_id_to_local[c] for c in routes[r] if c in cust_id_set
+                    ]
+                    if route_local:
+                        parent_routes_1indexed.append(route_local)
                 sp = Subproblem(
                     customer_ids=cust_ids,
                     xy=customer_xy[torch.as_tensor(cust_ids, dtype=torch.long)].numpy(),
                     demand=demand_int[cust_ids],
                     capacity=capacity,
                     depot_xy=depot_xy.numpy(),
+                    parent_routes=parent_routes_1indexed,
+                    n_parent_routes=len(parent_routes_1indexed),
                 )
                 subproblems.append(sp)
-
-        # Step 5 (LDE divergence): enforce capacity via greedy walk-and-split.
-        if self.enforce_capacity:
-            subproblems = self._split_by_capacity(subproblems, capacity)
 
         # Drop any empty subproblems that may have been produced.
         subproblems = [sp for sp in subproblems if sp.num_loc > 0]
         if subproblems:
             sizes = [sp.num_loc for sp in subproblems]
-            demand_pct = [
-                round(float(sp.demand.sum()) / max(1, sp.capacity), 2)
-                for sp in subproblems
-            ]
+            n_parent_routes_per = [sp.n_parent_routes for sp in subproblems]
         else:
             sizes = []
-            demand_pct = []
+            n_parent_routes_per = []
         log.info(
-            "decompose_done(k=%d, sizes=%s, demand_pct=%s, "
+            "decompose_done(k=%d, sizes=%s, n_parent_routes=%s, "
             "input_routes=%d, dropped_empty=%d)",
             len(subproblems),
             sizes,
-            demand_pct,
+            n_parent_routes_per,
             n_routes_input,
             n_routes_input - sum(1 for r in routes if r),
         )
         return subproblems
-
-    @staticmethod
-    def _split_by_capacity(
-        subproblems: list[Subproblem], capacity: int
-    ) -> list[Subproblem]:
-        """Greedy walk-and-split: for each subproblem whose total demand
-        exceeds the capacity, move customers (in the order they appear) into
-        new subproblems until the remainder fits.
-
-        Customers are moved in *demand-descending* order so we don't strand
-        high-demand customers in tiny leftover clusters.
-        """
-        result: list[Subproblem] = []
-        for sp in subproblems:
-            order = sorted(
-                range(len(sp.customer_ids)),
-                key=lambda i: -int(sp.demand[i]),
-            )
-            remaining_ids = list(order)
-            current_ids: list[int] = []
-            current_demand = 0
-            while remaining_ids:
-                cid = remaining_ids.pop(0)
-                d = int(sp.demand[cid])
-                if current_demand + d <= capacity:
-                    current_ids.append(cid)
-                    current_demand += d
-                else:
-                    if current_ids:
-                        result.append(
-                            Subproblem(
-                                customer_ids=[sp.customer_ids[i] for i in current_ids],
-                                xy=sp.xy[current_ids],
-                                demand=sp.demand[current_ids],
-                                capacity=capacity,
-                                depot_xy=sp.depot_xy,
-                            )
-                        )
-                    current_ids = [cid]
-                    current_demand = d
-            if current_ids:
-                result.append(
-                    Subproblem(
-                        customer_ids=[sp.customer_ids[i] for i in current_ids],
-                        xy=sp.xy[current_ids],
-                        demand=sp.demand[current_ids],
-                        capacity=capacity,
-                        depot_xy=sp.depot_xy,
-                    )
-                )
-        return result

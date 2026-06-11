@@ -124,12 +124,21 @@ def write_lkh_problem(path: str, problem_str: str) -> None:
 def parse_lkh_tour(
     path: str,
     depot_id: int = 1,
+    num_loc: int | None = None,
 ) -> list[list[int]]:
     """Parse a TSPLIB tour file into routes (1-indexed).
 
     The depot (id = ``depot_id``, default 1 in the Uchoa CVRP convention)
     appears at route boundaries. Routes are 1-indexed: ``[1, c1, c2, 1]``,
     ``[1, c3, c4, 1]``, etc.
+
+    For LKH-3 CVRP outputs, the tour is a "monster tour" — a single circular
+    walk in which the real depot appears exactly once (at the start) and
+    phantom depots (ids ``num_loc+2..num_loc+Salesmen``) appear at each route
+    boundary. In this case, ``num_loc`` should be passed; routes are then
+    split at phantom-depot boundaries rather than at the real-depot position.
+    Each returned route is bracketed by the real depot id (id ``depot_id``),
+    matching the convention of the non-CVRP case.
     """
     with open(path, "r") as f:
         text = f.read()
@@ -148,17 +157,47 @@ def parse_lkh_tour(
             continue
         nodes.append(int(line.split()[0]))
 
-    routes: list[list[int]] = []
-    cur: list[int] = []
-    for nid in nodes:
-        cur.append(nid)
-        if nid == depot_id and len(cur) > 1:
+    if num_loc is None:
+        # Legacy TSP-style: split at occurrences of the real depot.
+        routes: list[list[int]] = []
+        cur: list[int] = []
+        for nid in nodes:
+            cur.append(nid)
+            if nid == depot_id and len(cur) > 1:
+                routes.append(cur)
+                cur = []
+        if cur:
+            if cur[-1] != depot_id:
+                cur.append(depot_id)
             routes.append(cur)
+        return routes
+
+    # LKH-3 CVRP monster-tour mode: real depot appears once, phantom depots
+    # (ids > num_loc + 1) mark route boundaries. Each route is bracketed by
+    # the real depot id (id == depot_id) for downstream compatibility.
+    routes = []
+    cur = []
+    for nid in nodes:
+        if nid > num_loc + 1:
+            # Phantom depot → close current route and start a new one
+            if cur:
+                if cur[0] != depot_id:
+                    cur = [depot_id, *cur]
+                if cur[-1] != depot_id:
+                    cur = [*cur, depot_id]
+                routes.append(cur)
             cur = []
+            continue
+        cur.append(nid)
     if cur:
+        if cur[0] != depot_id:
+            cur = [depot_id, *cur]
         if cur[-1] != depot_id:
-            cur.append(depot_id)
-        routes.append(cur)
+            cur = [*cur, depot_id]
+        # Only keep the route if it contains at least one customer node
+        # (defensive: drop routes that are empty or depot-only).
+        if any(c != depot_id for c in cur):
+            routes.append(cur)
     return routes
 
 
@@ -329,6 +368,99 @@ def write_cvrp_initial_tour(
         f.write("\n".join(lines) + "\n")
 
 
+def write_subproblem_initial_tour(
+    path: str,
+    parent_routes_1indexed: Sequence[Sequence[int]],
+    num_loc: int,
+    name: str = "sub_initial",
+) -> None:
+    """Write a TSPLIB TOUR file that warm-starts an LKH-3 subproblem with
+    the parent routes, depot-separated via phantom depots.
+
+    This is the per-subproblem counterpart of :func:`write_cvrp_initial_tour`.
+    Unlike the master stitcher (which receives a flat permutation and
+    distributes customers evenly across ``salesmen`` phantom-depoted
+    routes), this function preserves the **parent route structure**:
+    each input parent route becomes one segment in the warm-start tour.
+
+    Layout::
+
+        depot(1) + route1_customers + phantom_depot + route2_customers + phantom_depot + ...
+
+    The real depot (``1``) appears exactly once at the start of the
+    tour; **phantom depots** (ids ``num_loc+2..num_loc+salesmen``)
+    appear between routes. LKH-3's CVRP tour validator rejects
+    duplicate ``1`` entries ("Node number occurs twice: 1"), so
+    using the real depot as a route separator does not work.
+
+    Each segment corresponds to a parent route from the master
+    solution. The DIMENSION equals ``num_loc + n_routes`` (one real
+    depot at id 1, plus ``n_routes - 1`` phantom depots, plus
+    ``num_loc`` customers) — the same expansion LKH-3 will apply
+    to the problem's dimension with ``SALESMEN = n_routes``.
+
+    Args:
+        path: where to write the .tour file.
+        parent_routes_1indexed: list of parent routes. Each route is a
+            sequence of 1-indexed Uchoa customer ids (``2..num_loc+1``)
+            in the subproblem's id space.
+        num_loc: number of customers in the subproblem
+            (``len(subproblem.customer_ids)``).
+        name: NAME field value (defaults to "sub_initial").
+    """
+    n_routes = len(parent_routes_1indexed)
+    if n_routes == 0:
+        raise ValueError("parent_routes_1indexed must be non-empty")
+
+    # Validate the routes: each should be a non-empty list of customer
+    # ids in 2..num_loc+1, no duplicates within or across routes.
+    seen: set[int] = set()
+    for i, r in enumerate(parent_routes_1indexed):
+        if not r:
+            raise ValueError(f"parent_routes[{i}] is empty")
+        for nid in r:
+            if not (2 <= int(nid) <= num_loc + 1):
+                raise ValueError(
+                    f"parent_routes[{i}] contains out-of-range id {nid} "
+                    f"(expected 2..{num_loc + 1})"
+                )
+            if int(nid) in seen:
+                raise ValueError(
+                    f"customer {nid} appears in multiple parent routes"
+                )
+            seen.add(int(nid))
+
+    # Build the body. The real depot (1) goes at the start; phantom
+    # depots (ids num_loc+2, num_loc+3, ..., num_loc+n_routes) go
+    # between routes. We do NOT repeat the real depot, since LKH-3
+    # rejects duplicate "1" entries.
+    body: list[int] = [1]  # start with the real depot
+    for i, route in enumerate(parent_routes_1indexed):
+        body.extend(int(c) for c in route)
+        if i < n_routes - 1:
+            # Phantom depot at this route's end. Phantom depots
+            # occupy ids num_loc+2..num_loc+n_routes (one per
+            # additional vehicle after the first).
+            body.append(num_loc + 2 + i)
+
+    # DIMENSION: num_loc customers + 1 real depot + (n_routes - 1) phantom
+    # depots = num_loc + n_routes. Matches the LKH-3 problem expansion
+    # when SALESMEN = n_routes.
+    dimension = num_loc + n_routes
+    lines: list[str] = [
+        f"NAME : {name}",
+        "COMMENT : Length = 0",  # placeholder; LKH-3 will recompute
+        "TYPE : TOUR",
+        f"DIMENSION : {dimension}",
+        "TOUR_SECTION",
+    ]
+    for nid in body:
+        lines.append(str(int(nid)))
+    lines.extend(["-1", "EOF"])
+    with open(path, "w") as f:
+        f.write("\n".join(lines) + "\n")
+
+
 # ---------------------------------------------------------------------------
 # LKH-3 routes -> RL4CO action
 # ---------------------------------------------------------------------------
@@ -425,6 +557,11 @@ class LKHParameters:
     trace_level: int = 0
     # For CVRP variants where specifying VEHICLES makes LKH hang, we omit it.
     vehicles: int | None = None
+    # For CVRP variants where the parent route count pins the number
+    # of vehicles for a subproblem warm start. If set, emits
+    # SALESMEN = {salesmen} so the warm-start TOUR file's DIMENSION
+    # matches the parameter.
+    salesmen: int | None = None
 
     def to_par_string(self) -> str:
         lines: list[str] = []
@@ -447,6 +584,13 @@ class LKHParameters:
             )
         if self.vehicles is not None:
             lines.append(f"VEHICLES = {self.vehicles}")
+        if self.salesmen is not None:
+            # SALESMEN must be >= 1. LKH-3 reads it as an integer and
+            # uses it to set the problem's expanded DIMENSION
+            # (num_loc + SALESMEN), so the warm-start tour's
+            # DIMENSION must match exactly. Mirror the TIME_LIMIT
+            # pattern: clamp to a safe positive integer.
+            lines.append(f"SALESMEN = {max(1, int(self.salesmen))}")
         lines.append(f"SEED = {self.seed}")
         lines.append(f"TRACE_LEVEL = {self.trace_level}")
         return "\n".join(lines) + "\n"

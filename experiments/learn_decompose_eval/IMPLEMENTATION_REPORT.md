@@ -90,7 +90,9 @@ learn_decompose_eval/
 - `cvrp_td_to_lkh_problem(td)` — RL4CO CVRP TensorDict → TSPLIB CVRP string. Uses **Uchoa convention** (depot=1, customers=2..N+1). `EDGE_WEIGHT_TYPE: EXPLICIT, EDGE_WEIGHT_FORMAT: FULL_MATRIX` with precomputed L2 distances × `LKH_SCALING_FACTOR = 100_000`. Critical: the matrix section is emitted as values only (no leading row index), because LKH-3's `Read_EDGE_WEIGHT_SECTION` uses `fscanf("%lf")` to consume exactly `Dim*Dim` doubles and any extra leading integers throw off the count.
 - `parse_lkh_tour(path, depot_id=1)` — `.tour` file → list of routes (1-indexed, depot repeated at route boundaries).
 - `routes_to_action(routes, num_loc, depot_id=1)` — LKH 1-indexed → CVRPEnv 1-indexed action format. Customer id `n` (2..N+1 in Uchoa) → action value `n-1` (1..N). Phantom depots (ids > N+1) → emit `0`.
-- `LKHParameters` — dataclass for `.par` file generation with `WriteTour`.
+- `LKHParameters` — dataclass for `.par` file generation with `WriteTour`. Includes a `salesmen` field that emits `SALESMEN = {n}` (used for warm-started subproblems so the problem's expanded DIMENSION matches the warm-start tour's DIMENSION).
+- `write_cvrp_initial_tour(path, customer_seq, num_loc, salesmen, name)` — TSPLIB TOUR writer with phantom depots, used for the master's restart initial tour.
+- `write_subproblem_initial_tour(path, parent_routes, num_loc, name)` — TSPLIB TOUR writer that preserves the parent route structure (one segment per parent route, depot-separated) for warm-starting subproblems.
 
 #### `decomposition.py`
 - `BarycentreClusteringDecomposer` — Python port of `BarycentreClusteringDecomposition.cpp`:
@@ -98,14 +100,16 @@ learn_decompose_eval/
   2. `k = ⌈n / target_max_subproblem_size⌉` (capped by `#non-empty routes` because k-means needs `n_samples ≥ k`).
   3. sklearn `KMeans(n_clusters=k, init='k-means++', n_init=1, max_iter=100, tol=1e-2, random_state=0)` — matches the C++ `KMeans.h:180-245` parameters.
   4. Empty routes distributed round-robin to clusters.
-  5. **LDE divergence from C++**: post-hoc capacity-respecting split. The original HGS sub-GA respected capacity implicitly; LKH-3 needs a feasible sub-CVRP, so we greedily walk-and-split clusters whose total demand exceeds `vehicle_capacity` (customers sorted by demand descending).
-- `Subproblem` — dataclass with `customer_ids, xy, demand, capacity, depot_xy`; `to_td()` converts to a CVRPEnv-compatible TensorDict.
+  5. **No post-hoc capacity split** (deliberate departure from the prior implementation). Each `Subproblem` carries the parent routes assigned to its cluster (`parent_routes` field, subproblem-local 1-indexed Uchoa customer ids, depot implicit) and `n_parent_routes` (= `SALESMEN` for the subproblem). Per-route capacity-feasibility is inherited from the parent, so the subproblem is provably feasible by construction.
+- `Subproblem` — dataclass with `customer_ids, xy, demand, capacity, depot_xy, parent_routes, n_parent_routes`; `to_td()` converts to a CVRPEnv-compatible TensorDict.
 
 #### `orchestration.py`
 - `OrchestratorConfig` — dataclass for the watcher.
 - `IntermediateTourWatcher` — the main orchestrator. Manages the master LKH-3 subprocess, polls the intermediate-tour file, decomposes, runs subproblems in parallel, restarts master with warm start.
 - `IntermediateTourWatcher.solve(td)` — returns `(routes, total_seconds)`.
-- `_mtime`, `_read_tour_safely` (with retry on partial writes), `_infer_depot_id`, `_routes_zero_indexed`, `_stitch_routes`, `_write_initial_tour` — internal helpers.
+- `_solve_subproblems._one(sp)` — for each subproblem: write a warm-start TSPLIB TOUR from `sp.parent_routes` (via `write_subproblem_initial_tour`), pass it as `INITIAL_TOUR_FILE` and `SALESMEN = n_parent_routes` to LKH-3, and log `sub_improved = sub_cost < parent_cost` (cost comparison in scaled units).
+- Edge case: subproblems with `n_parent_routes == 1` skip the LKH-3 call and return the parent route directly.
+- `_mtime`, `_read_tour_safely` (with retry on partial writes), `_infer_depot_id`, `_routes_zero_indexed`, `_stitch_routes`, `_write_initial_tour`, `_compute_parent_route_cost_scaled` — internal helpers.
 
 #### `classical_lkh.py`
 - `RawLKH3CVRSolver(ClassicalSolver)` — `@SolverRegistry.register("raw_lkh_cvrp", env_names=("cvrp",))`. One LKH-3 invocation per instance, fixed time budget.
@@ -135,7 +139,7 @@ Mirrors `experiments/nrp_eval/configs/`, with these specific files:
 | **EXPLICIT FULL_MATRIX (not EUC_2D)** | RL4CO coordinates are floats in [0, 1]. LKH-3's `EUC_2D` uses fixed-point integer arithmetic with squared distances up to 1e10, which overflows int32. Pre-computing the L2 distance matrix in Python and embedding it as `EXPLICIT FULL_MATRIX` is the only safe path. |
 | **Uchoa CVRP convention (depot=1, customers=2..N+1)** | This is the standard TSPLIB CVRP format used by the Uchoa benchmark set and is well-supported by LKH-3's CVRP solver. The internal LKH-3 convention (depot=last node) is more fragile and varies between versions. |
 | **k-means++ via sklearn** | Mirrors the C++ `KMeans.h:180-245` parameters exactly (init='k-means++', n_init=1, max_iter=100, tol=1e-2, single-threaded). No need to reimplement k-means. |
-| **Capacity-respecting split (post-hoc divergence from C++)** | LKH-3 needs a feasible sub-CVRP; the C++ HGS sub-GA respected capacity implicitly. Our split greedily walks customers in demand-descending order. Documented in the plan as a deliberate divergence. |
+| **Route-preserving subproblems (no post-hoc capacity split)** | Each `Subproblem` carries the parent routes that k-means assigned to its cluster, in subproblem-local 1-indexed Uchoa ids. The sub-LKH-3 is warm-started with these parent routes as `INITIAL_TOUR_FILE`, with `SALESMEN = n_parent_routes` so the problem's expanded DIMENSION matches the tour. Per-route capacity-feasibility is therefore inherited from the parent — no demand-descending split is needed. The LKH-3 LK search on the warm-start acts as the "best-of-two" merge from Santini et al. natively. |
 | **ThreadPoolExecutor for subproblem parallelism** | LKH-3 is single-threaded; running K instances in parallel gives near-linear speedup on the subproblem phase. `subprocess.Popen` with `preexec_fn=os.setsid` for clean SIGTERM of the master. |
 | **mtime polling at 100ms (not inotify)** | LKH-3 writes the intermediate tour non-atomically; 100ms polling is robust and doesn't require extra deps. |
 | **Reuse `nrp_eval` harness** | Avoids re-implementing the eval pipeline; we get wandb logging, per-instance tables, and the `Solver` ABC for free. The `cli.py` adds `nrp_eval` to `sys.path` at runtime. |
@@ -146,7 +150,7 @@ Mirrors `experiments/nrp_eval/configs/`, with these specific files:
 
 | Test file | Tests | Status |
 |-----------|-------|--------|
-| `tests/test_decomposition.py` | 4 (k=1, k=3, empty routes, capacity split) | ✅ All pass |
+| `tests/test_decomposition.py` | 5 (k=1, k=3, empty routes, parent-route capacity-feasibility, k=1 single-route warm start) | ✅ All pass |
 | `tests/test_lkh_format.py` | 5 (writer sections, round-trip, action conversion, hand-rolled tour) | ✅ All pass |
 | `tests/test_classical_lkh.py` | 3 (raw solver, BCC k=1, BCC k=2) | 2 pass, 1 documented known-fail |
 

@@ -57,6 +57,30 @@ def _resolve_lkh_binary(binary_path: str | None) -> str:
     return binary_path
 
 
+def _intermediate_cost(path: str) -> str | None:
+    """Read the cost line from a LKH-3 tour file.
+
+    The LKH-3 ``WriteTour`` format emits either
+    ``COMMENT : Length = <value>`` (no current penalty) or
+    ``COMMENT : Cost = <penalty>_<value>`` (with penalty). We only need
+    this for logging, so we return the raw line string and tolerate
+    parse failures.
+    """
+    try:
+        with open(path) as f:
+            for _ in range(20):  # header is <20 lines
+                line = f.readline()
+                if not line:
+                    break
+                if "=" in line and (
+                    "Length" in line or "Cost" in line
+                ):
+                    return line.strip()
+    except OSError:
+        return None
+    return None
+
+
 def _solve_one_instance(
     lkh_binary: str,
     td_instance: TensorDict,
@@ -76,6 +100,7 @@ def _solve_one_instance(
         os.makedirs(tmp, exist_ok=True)
     problem_path = os.path.join(tmp, "instance.vrp")
     final_path = os.path.join(tmp, "final.tour")
+    intermediate_path = os.path.join(tmp, "intermediate.tour")
     par_path = os.path.join(tmp, "instance.par")
     stderr_path = os.path.join(tmp, "lkh.stderr")
     stdout_path = os.path.join(tmp, "lkh.stdout")
@@ -86,6 +111,7 @@ def _solve_one_instance(
         LKHParameters(
             problem_file=problem_path,
             output_tour_file=final_path,
+            intermediate_tour_file=intermediate_path,  # LDE patch
             runs=1,
             max_trials=10_000_000,
             time_limit_s=time_limit_s,
@@ -110,6 +136,38 @@ def _solve_one_instance(
                 )
         except subprocess.TimeoutExpired:
             elapsed = time.monotonic() - t0
+            # Fall back to the latest intermediate tour written by the
+            # LDE-patched LKH-3. The patch writes the current best tour
+            # on every improvement, so this is a valid LKH-3 CVRP tour
+            # at the moment the watchdog fired — and it preserves the
+            # work LKH-3 has already done. This mirrors the Bcc
+            # orchestrator's robustness: Bcc always has a current-best
+            # tour because it reads INTERMEDIATE_TOUR_FILE on every
+            # iteration; the raw path gains the same robustness by
+            # keeping a pointer to the same file and falling back to
+            # it on timeout.
+            if os.path.exists(intermediate_path) and os.path.getsize(intermediate_path) > 0:
+                try:
+                    routes = parse_lkh_tour(intermediate_path)
+                    log.warning(
+                        "raw_timeout_intermediate_fallback("
+                        "name=%s, time_limit_s=%.1f, elapsed=%.1f, "
+                        "intermediate_routes=%d, intermediate_cost=%s)",
+                        name,
+                        time_limit_s,
+                        elapsed,
+                        len(routes),
+                        _intermediate_cost(intermediate_path),
+                    )
+                    return routes, elapsed
+                except Exception as e:
+                    log.error(
+                        "raw_timeout_intermediate_parse_failed("
+                        "name=%s, error=%r, stderr_tail=%r)",
+                        name,
+                        e,
+                        _tail(stderr_path, 2048),
+                    )
             log.error(
                 "raw_timeout(name=%s, time_limit_s=%.1f, elapsed=%.1f, stderr_tail=%r)",
                 name,
@@ -186,9 +244,22 @@ class RawLKH3CVRSolver:
         self._registered_name = "raw_lkh_cvrp"
         self._supported_envs = ("cvrp",)
 
-    def solve_batch(self, td_cpu: TensorDict) -> np.ndarray:
+    def solve_batch(
+        self, td_cpu: TensorDict
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """Solve a batch of instances in parallel.
+
+        Returns:
+            actions: ``np.ndarray`` of shape ``[B, T]`` (zero-padded; failed
+              instances have a zero placeholder so the tensor stays rectangular).
+            feasible: ``np.ndarray`` of shape ``[B]`` of bool. ``False`` means
+              LKH-3 returned no usable tour (timeout, non-zero exit, missing
+              ``final.tour``) and ``actions[i]`` is a placeholder that must
+              not be treated as a real CVRP tour.
+        """
         batch = td_cpu.batch_size[0] if td_cpu.batch_size else 1
         results: list[np.ndarray] = []
+        feasible: list[bool] = []
         n_failed = 0
         # Parallel across instances
         with ThreadPoolExecutor(max_workers=self.num_workers) as ex:
@@ -213,17 +284,20 @@ class RawLKH3CVRSolver:
                     log.exception("raw_instance_exception(idx=%d): %s", i, e)
                     routes = []
                 # num_loc is the same for all instances in the batch
-                num_loc = td_cpu["locs"].shape[-2]
                 if td_cpu["locs"].shape[-2] == td_cpu["demand"].shape[-1] + 1:
                     num_loc = td_cpu["demand"].shape[-1]
                 else:
                     num_loc = td_cpu["locs"].shape[-2] - 1
                 if not routes:
                     n_failed += 1
-                    # No solution found; emit a dummy action (all depot=0).
+                    # No solution found; emit a placeholder action and mark
+                    # the instance as infeasible so the harness can drop it
+                    # from summary stats instead of counting a bogus tour.
                     results.append(np.zeros(num_loc + 1, dtype=np.int64))
+                    feasible.append(False)
                 else:
                     results.append(routes_to_action(routes, num_loc))
+                    feasible.append(True)
         # Pad to common length
         max_len = max(a.shape[0] for a in results)
         out = np.zeros((len(results), max_len), dtype=np.int64)
@@ -235,17 +309,41 @@ class RawLKH3CVRSolver:
             n_failed,
             batch - n_failed,
         )
-        return out
+        return out, np.asarray(feasible, dtype=bool)
 
     def solve(self, td: TensorDict) -> TensorDict:
         device = td.device
         td_cpu = td.to("cpu").clone()
-        actions_np = self.solve_batch(td_cpu)
+        actions_np, feasible_np = self.solve_batch(td_cpu)
         actions = torch.as_tensor(actions_np, dtype=torch.int64, device=device)
-        reward = self.env.get_reward(td, actions)
+        feasible = torch.as_tensor(feasible_np, dtype=torch.bool)
+        # Compute reward only for feasible instances.  Failed instances
+        # have an all-zero placeholder action that the CVRP env would
+        # reject (``check_solution_validity`` raises ``Invalid tour``),
+        # so calling ``env.get_reward`` on the full batch would throw
+        # and propagate to the harness's batch-level exception handler,
+        # marking every instance in the batch as failed.  Compute
+        # per-instance instead.
+        B = actions.shape[0]
+        if feasible.all():
+            reward = self.env.get_reward(td, actions)
+        else:
+            reward = torch.full(
+                (B,), float("nan"), dtype=torch.float32, device=device
+            )
+            ok_idx = feasible.nonzero(as_tuple=False).flatten().tolist()
+            if ok_idx:
+                td_ok = td[ok_idx]
+                actions_ok = actions[ok_idx]
+                r_ok = self.env.get_reward(td_ok, actions_ok)
+                # ``get_reward`` may return a scalar or a (B_ok,) tensor.
+                if r_ok.dim() == 0:
+                    r_ok = r_ok.unsqueeze(0)
+                reward[ok_idx] = r_ok.to(device).flatten()
         return TensorDict(
             actions=actions,
             reward=reward,
+            feasible=feasible.to(device),
             batch_size=actions.shape[:1],
         )
 
@@ -311,10 +409,24 @@ class BarycentreLKH3CVRSolver:
         )
         return IntermediateTourWatcher(cfg)
 
-    def solve_batch(self, td_cpu: TensorDict) -> np.ndarray:
+    def solve_batch(
+        self, td_cpu: TensorDict
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """Solve a batch of instances in parallel.
+
+        Returns:
+            actions: ``np.ndarray`` of shape ``[B, T]`` (zero-padded; failed
+              instances have a zero placeholder).
+            feasible: ``np.ndarray`` of shape ``[B]`` of bool. ``False`` means
+              the master never produced a usable tour (self-exit before any
+              intermediate, no final tour, all subproblems failed, etc.) and
+              ``actions[i]`` is a placeholder that must not be treated as a
+              real CVRP tour.
+        """
         batch = td_cpu.batch_size[0] if td_cpu.batch_size else 1
         num_loc = td_cpu["demand"].shape[-1]
         results: list[np.ndarray] = []
+        feasible: list[bool] = []
         n_failed = 0
         with ThreadPoolExecutor(max_workers=self.num_workers) as ex:
             futures = []
@@ -329,9 +441,14 @@ class BarycentreLKH3CVRSolver:
                     routes = []
                 if not routes:
                     n_failed += 1
+                    # No solution found; emit a placeholder action and mark
+                    # the instance as infeasible so the harness can drop it
+                    # from summary stats instead of counting a bogus tour.
                     results.append(np.zeros(num_loc + 1, dtype=np.int64))
+                    feasible.append(False)
                 else:
                     results.append(routes_to_action(routes, num_loc))
+                    feasible.append(True)
         max_len = max(a.shape[0] for a in results)
         out = np.zeros((len(results), max_len), dtype=np.int64)
         for i, a in enumerate(results):
@@ -342,7 +459,7 @@ class BarycentreLKH3CVRSolver:
             n_failed,
             batch - n_failed,
         )
-        return out
+        return out, np.asarray(feasible, dtype=bool)
 
     def _solve_one(self, td_i: TensorDict, name: str = "inst") -> list[list[int]]:
         watcher = self._watcher()
@@ -352,12 +469,35 @@ class BarycentreLKH3CVRSolver:
     def solve(self, td: TensorDict) -> TensorDict:
         device = td.device
         td_cpu = td.to("cpu").clone()
-        actions_np = self.solve_batch(td_cpu)
+        actions_np, feasible_np = self.solve_batch(td_cpu)
         actions = torch.as_tensor(actions_np, dtype=torch.int64, device=device)
-        reward = self.env.get_reward(td, actions)
+        feasible = torch.as_tensor(feasible_np, dtype=torch.bool)
+        # Compute reward only for feasible instances.  Failed instances
+        # have an all-zero placeholder action that the CVRP env would
+        # reject (``check_solution_validity`` raises ``Invalid tour``),
+        # so calling ``env.get_reward`` on the full batch would throw
+        # and propagate to the harness's batch-level exception handler,
+        # marking every instance in the batch as failed.  Compute
+        # per-instance instead.
+        B = actions.shape[0]
+        if feasible.all():
+            reward = self.env.get_reward(td, actions)
+        else:
+            reward = torch.full(
+                (B,), float("nan"), dtype=torch.float32, device=device
+            )
+            ok_idx = feasible.nonzero(as_tuple=False).flatten().tolist()
+            if ok_idx:
+                td_ok = td[ok_idx]
+                actions_ok = actions[ok_idx]
+                r_ok = self.env.get_reward(td_ok, actions_ok)
+                if r_ok.dim() == 0:
+                    r_ok = r_ok.unsqueeze(0)
+                reward[ok_idx] = r_ok.to(device).flatten()
         return TensorDict(
             actions=actions,
             reward=reward,
+            feasible=feasible.to(device),
             batch_size=actions.shape[:1],
         )
 

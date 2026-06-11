@@ -24,16 +24,16 @@ seed: 1234
 solver_name: bcc_lkh_cvrp
 solver:
   bcc_lkh_cvrp:
-    max_total_s: 120.0
+    max_total_s: 300.0
     min_restart_interval_s: 10.0
     population_size: 4
     max_subs_time_fraction: 0.3
     num_workers: 4
-    target_max_subproblem_size: 200
+    target_max_subproblem_size: 30
     random_state: 0
     seed: 1
     trace_level: 0
 
 evaluate:
   method: greedy
-  num_instances: 100
+  num_instances: 10

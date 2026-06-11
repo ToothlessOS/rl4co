@@ -6,6 +6,7 @@ code path as RLSolver.
 """
 from __future__ import annotations
 
+import logging
 import time
 from collections.abc import Sequence
 from dataclasses import dataclass, field
@@ -29,6 +30,8 @@ from torch.utils.data import DataLoader
 from nrp.solvers import Solver
 from nrp.utils.metrics import gap_to_optimal, tour_length_summary
 from nrp.utils.pkl import save_versioned
+
+log = logging.getLogger(__name__)
 
 
 @dataclass
@@ -184,6 +187,34 @@ def evaluate(
                 out = solver.solve(td)
                 _ = out["actions"]
                 reward = out["reward"]
+                # Optional per-instance feasible mask. A solver may attach
+                # ``out["feasible"]`` (bool tensor of shape [B]) to mark
+                # specific instances as not having produced a real tour
+                # (e.g. LKH-3 timed out before writing final.tour). When
+                # present, those rows are recorded as failed but the
+                # remaining instances in the batch keep their reward.
+                if "feasible" in out.keys():
+                    feasible_t = out["feasible"]
+                    if hasattr(feasible_t, "detach"):
+                        feasible_t = feasible_t.detach()
+                    feasible_list = (
+                        feasible_t.flatten().cpu().tolist()
+                        if hasattr(feasible_t, "flatten")
+                        else list(feasible_t)
+                    )
+                    if len(feasible_list) != B:
+                        # Solver returned a mismatched mask; fall back to
+                        # legacy all-feasible behaviour rather than crash.
+                        log.warning(
+                            "feasible_mask_length_mismatch(batch_idx=%d, "
+                            "B=%d, mask_len=%d)",
+                            batch_idx,
+                            B,
+                            len(feasible_list),
+                        )
+                        feasible_list = [True] * B
+                else:
+                    feasible_list = [True] * B
             except Exception as e:
                 for i in range(B):
                     per_instance.append({
@@ -196,21 +227,33 @@ def evaluate(
                     })
                 n_done += B
                 continue
-            # Per-instance rows
+            # Per-instance rows. Honour the per-instance feasible mask so a
+            # single miss does not poison the rest of the batch.
             reward_list = reward.flatten().cpu().tolist() if reward.dim() > 0 else [float(reward.item())]
             for i in range(B):
                 r = reward_list[i] if i < len(reward_list) else float("nan")
-                per_instance.append({
-                    "batch_idx": batch_idx,
-                    "instance_idx": n_done + i,
-                    "reward": float(r),
-                    "tour_length": float(-r),
-                    "feasible": True,
-                })
+                ok = bool(feasible_list[i]) if i < len(feasible_list) else True
+                if ok:
+                    per_instance.append({
+                        "batch_idx": batch_idx,
+                        "instance_idx": n_done + i,
+                        "reward": float(r),
+                        "tour_length": float(-r),
+                        "feasible": True,
+                    })
+                else:
+                    per_instance.append({
+                        "batch_idx": batch_idx,
+                        "instance_idx": n_done + i,
+                        "tour_length": float("nan"),
+                        "reward": float("nan"),
+                        "feasible": False,
+                        "error": "solver_returned_no_tour",
+                    })
             n_done += B
     elapsed = time.perf_counter() - t0
 
-    tour_lengths = [r["tour_length"] for r in per_instance if r.get("feasible")]
+    tour_lengths = [r["tour_length"] for r in per_instance]
     summary = tour_length_summary(tour_lengths)
     summary["wallclock_total_s"] = elapsed
     summary["wallclock_per_instance_s"] = elapsed / max(1, len(per_instance))

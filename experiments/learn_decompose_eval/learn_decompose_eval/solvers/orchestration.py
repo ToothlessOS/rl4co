@@ -45,6 +45,7 @@ from .lkh_format import (
     parse_tour_with_cost,
     write_cvrp_initial_tour,
     write_lkh_problem,
+    write_subproblem_initial_tour,
 )
 
 log = logging.getLogger(__name__)
@@ -137,16 +138,25 @@ def _infer_depot_id(routes: list[list[int]]) -> int:
 
 
 def _read_tour_safely(
-    path: str, retries: int = 5, sleep_s: float = 0.05
+    path: str,
+    retries: int = 5,
+    sleep_s: float = 0.05,
+    num_loc: int | None = None,
 ) -> list[list[int]] | None:
-    """Read a TSPLIB tour file with retries to handle non-atomic writes."""
+    """Read a TSPLIB tour file with retries to handle non-atomic writes.
+
+    ``num_loc`` is the number of customer nodes in the problem (used to
+    recognise phantom depots in LKH-3 CVRP monster tours — see
+    ``parse_lkh_tour``). Pass ``None`` to fall back to the legacy
+    TSP-style depot-id counting.
+    """
     last_err: Exception | None = None
     for _ in range(retries):
         try:
             if not os.path.exists(path) or os.path.getsize(path) == 0:
                 time.sleep(sleep_s)
                 continue
-            return parse_lkh_tour(path)
+            return parse_lkh_tour(path, num_loc=num_loc)
         except (OSError, ValueError) as e:
             last_err = e
             log.debug("Read failed (%s); retrying", e)
@@ -302,7 +312,7 @@ class IntermediateTourWatcher:
 
         def _read_slot(slot_idx: int) -> list[list[int]] | None:
             path = intermediate_path if slot_idx == 0 else snapshot_paths[slot_idx - 1]
-            return _read_tour_safely(path)
+            return _read_tour_safely(path, num_loc=num_loc_hint)
 
         def _write_slot(slot_idx: int, routes_1indexed: list[int]) -> None:
             path = intermediate_path if slot_idx == 0 else snapshot_paths[slot_idx - 1]
@@ -546,7 +556,7 @@ class IntermediateTourWatcher:
             # Final read of the master output — must happen INSIDE the
             # try so the tmpdir (and final_path) are still alive for
             # diagnostics.
-            final_routes = _read_tour_safely(final_path)
+            final_routes = _read_tour_safely(final_path, num_loc=num_loc_hint)
             if final_routes:
                 best_routes = final_routes
             else:
@@ -697,18 +707,69 @@ class IntermediateTourWatcher:
                 sp_vrp = os.path.join(tmp, "sub.vrp")
                 sp_par = os.path.join(tmp, "sub.par")
                 sp_tour = os.path.join(tmp, "sub.tour")
+                sp_initial = os.path.join(tmp, "sub_initial.tour")
                 sp_err = os.path.join(tmp, "lkh.stderr")
                 write_lkh_problem(
                     sp_vrp, cvrp_td_to_lkh_problem(sp.to_td(), name="sub")
                 )
+                # Warm-start: write the parent routes as a TSPLIB TOUR
+                # and pass it to LKH-3 as INITIAL_TOUR_FILE. SALESMEN
+                # is set to n_parent_routes so the problem's expanded
+                # DIMENSION matches the tour's DIMENSION. Edge case:
+                # if n_parent_routes <= 1 there's nothing for LKH-3
+                # to do (single-route clusters are already solved),
+                # so we skip the LKH-3 call and return the parent
+                # routes directly.
+                warm_start_routes: list[list[int]] | None = None
+                if sp.n_parent_routes == 0:
+                    # No parent routes to warm-start with. Fall back
+                    # to the no-warm-start path: let LKH-3 figure
+                    # out the routes from the demand/capacity math.
+                    salesmen: int | None = None
+                elif sp.n_parent_routes == 1:
+                    # Trivial: one parent route, one vehicle. No
+                    # LKH-3 search needed; return the parent route
+                    # in Uchoa 1-indexed form (with depot markers
+                    # so the stitcher can treat it like any other
+                    # sub-tour).
+                    only_route = sp.parent_routes[0]
+                    warm_start_routes = [[1] + list(only_route) + [1]]
+                    salesmen = 1
+                else:
+                    # Write the parent routes as a warm-start tour.
+                    write_subproblem_initial_tour(
+                        sp_initial,
+                        sp.parent_routes,
+                        num_loc=sp.num_loc,
+                        name="sub_initial",
+                    )
+                    salesmen = sp.n_parent_routes
+
+                # Short-circuit: if we have a warm-start with 1
+                # vehicle, return the parent route without invoking
+                # LKH-3.
+                if warm_start_routes is not None and sp.n_parent_routes == 1:
+                    log.info(
+                        "sub_skip_lkh(name=%s, sub_size=%d, "
+                        "n_parent_routes=1, reason=single_route)",
+                        name,
+                        sp.num_loc,
+                    )
+                    return sp, warm_start_routes
+
+                initial_tour_file_arg = (
+                    sp_initial if sp.n_parent_routes > 1 else None
+                )
                 LKHParameters(
                     problem_file=sp_vrp,
                     output_tour_file=sp_tour,
+                    initial_tour_file=initial_tour_file_arg,
                     runs=1,
                     max_trials=10_000_000,
                     time_limit_s=per_sub_s,
                     seed=self.cfg.seed,
                     trace_level=self.cfg.trace_level,
+                    salesmen=salesmen,
                 ).write(sp_par)
                 t0 = time.monotonic()
                 rc = _run_lkh_blocking(
@@ -718,38 +779,74 @@ class IntermediateTourWatcher:
                     timeout_s=per_sub_s + 5,
                 )
                 wallclock = time.monotonic() - t0
-                routes = _read_tour_safely(sp_tour) or []
+                routes = _read_tour_safely(sp_tour, num_loc=sp.num_loc) or []
                 if rc != 0:
                     log.error(
-                        "sub_failed(name=%s, sub_size=%d, rc=%s, " "stderr_tail=%r)",
+                        "sub_failed(name=%s, sub_size=%d, rc=%s, "
+                        "n_parent_routes=%d, stderr_tail=%r)",
                         name,
                         sp.num_loc,
                         rc,
+                        sp.n_parent_routes,
                         _tail(sp_err, 2048),
                     )
+                # Sub_improved check: compare sub-tour cost against
+                # the parent route cost. Both are in the same
+                # LKH_SCALING_FACTOR units (scaled by 100_000) so a
+                # direct comparison is valid. The subproblem's
+                # distance matrix is identical to the parent's for
+                # the customer pairs that appear in this cluster.
+                sub_cost_scaled: int | None = None
+                parent_cost_scaled: int | None = None
+                sub_improved: bool | None = None
+                meta = parse_tour_with_cost(sp_tour)
+                if meta is not None:
+                    _, sub_cost_scaled, _ = meta
+                if sub_cost_scaled is not None and sp.parent_routes:
+                    # Compute parent route cost in the same scaled
+                    # units, using the subproblem's distance matrix.
+                    # We extract distances from the TSPLIB file.
+                    parent_cost_scaled = _compute_parent_route_cost_scaled(
+                        sp_vrp, sp.parent_routes
+                    )
+                    if parent_cost_scaled is not None:
+                        # Strict improvement (sub < parent). Equal
+                        # counts as not-improved (sub didn't strictly
+                        # beat parent).
+                        sub_improved = sub_cost_scaled < parent_cost_scaled
                 log.info(
                     "sub_done(name=%s, sub_size=%d, rc=%s, "
-                    "routes=%d, wallclock=%.2fs)",
+                    "n_parent_routes=%d, warm_started=%s, "
+                    "sub_cost=%s, parent_cost=%s, "
+                    "sub_improved=%s, routes=%d, wallclock=%.2fs)",
                     name,
                     sp.num_loc,
                     rc,
+                    sp.n_parent_routes,
+                    sp.n_parent_routes > 1,
+                    sub_cost_scaled,
+                    parent_cost_scaled,
+                    sub_improved,
                     len(routes),
                     wallclock,
                 )
                 return sp, routes
             except subprocess.TimeoutExpired:
                 log.error(
-                    "sub_timeout(name=%s, sub_size=%d, per_sub_s=%.1f)",
+                    "sub_timeout(name=%s, sub_size=%d, per_sub_s=%.1f, "
+                    "n_parent_routes=%d)",
                     name,
                     sp.num_loc,
                     per_sub_s,
+                    sp.n_parent_routes,
                 )
                 return sp, []
             except Exception as e:  # noqa: BLE001
                 log.exception(
-                    "sub_raised(name=%s, sub_size=%d): %s",
+                    "sub_raised(name=%s, sub_size=%d, n_parent_routes=%d): %s",
                     name,
                     sp.num_loc,
+                    sp.n_parent_routes,
                     e,
                 )
                 return sp, []
@@ -796,6 +893,102 @@ def _routes_zero_indexed(
         if cust:
             out.append(cust)
     return out
+
+
+def _compute_parent_route_cost_scaled(
+    vrp_path: str,
+    parent_routes_1indexed: list[list[int]],
+) -> int | None:
+    """Sum the edge costs of the parent routes using the distance matrix
+    embedded in the subproblem's TSPLIB CVRP file.
+
+    Returns the cost in the same scaled units LKH-3 uses internally
+    (``LKH_SCALING_FACTOR = 100_000`` — see ``lkh_format.py``), so a
+    direct comparison with the sub-tour cost (parsed from
+    ``parse_tour_with_cost``) is valid.
+
+    The parent routes are 1-indexed Uchoa customer ids in the
+    subproblem's local id space (depot = 1, customers = 2..N+1).
+    Each route's cost is the sum of edges from depot→c1, c1→c2, ...,
+    ck→depot. We round to the nearest integer to match LKH-3's
+    integer cost accounting.
+
+    Returns ``None`` if the TSPLIB file cannot be parsed or the
+    EDGE_WEIGHT_SECTION is missing/malformed.
+    """
+    try:
+        with open(vrp_path, "r") as f:
+            text = f.read()
+    except OSError:
+        return None
+
+    # Find DIMENSION and EDGE_WEIGHT_SECTION.
+    dimension: int | None = None
+    section_idx = text.find("EDGE_WEIGHT_SECTION")
+    if section_idx < 0:
+        return None
+    header = text[:section_idx]
+    for line in header.splitlines():
+        line = line.strip()
+        if line.startswith("DIMENSION"):
+            try:
+                dimension = int(line.split(":", 1)[1].strip())
+            except (ValueError, IndexError):
+                return None
+            break
+    if dimension is None:
+        return None
+
+    # Parse the FULL_MATRIX rows.
+    body = text[section_idx:].split("\n", 1)[1]
+    rows: list[list[int]] = []
+    current: list[int] = []
+    for line in body.splitlines():
+        line = line.strip()
+        if not line or line in ("-1", "EOF", "DEPOT_SECTION", "DEMAND_SECTION"):
+            if current:
+                rows.append(current)
+                current = []
+            if line in ("DEPOT_SECTION", "DEMAND_SECTION", "EOF"):
+                break
+            continue
+        parts = line.split()
+        for p in parts:
+            try:
+                current.append(int(p))
+            except ValueError:
+                # Skip non-integer tokens (e.g., a stray section name).
+                continue
+            if current and len(current) == dimension:
+                rows.append(current)
+                current = []
+    if current:
+        rows.append(current)
+    if len(rows) != dimension:
+        return None
+
+    # Sum edge costs. Each parent route: depot(1) → c1 → c2 → ... → ck → depot(1).
+    # We treat the depot as node index 0 in the matrix (i.e. id 1).
+    total = 0
+    for route in parent_routes_1indexed:
+        if not route:
+            continue
+        prev = 1  # depot
+        for nid in route:
+            # 1-indexed Uchoa → 0-indexed matrix row.
+            i = prev - 1
+            j = int(nid) - 1
+            if not (0 <= i < dimension and 0 <= j < dimension):
+                return None
+            total += int(rows[i][j])
+            prev = int(nid)
+        # Close the route: last customer → depot.
+        i = prev - 1
+        j = 0  # depot
+        if not (0 <= i < dimension and 0 <= j < dimension):
+            return None
+        total += int(rows[i][j])
+    return total
 
 
 def _stitch_routes(
