@@ -1,7 +1,7 @@
-# Runtime outputs
-results/
-checkpoints/
-data/
+# Runtime outputs (anchored to this dir so they don't shadow nested packages like nrp/data/)
+/results/
+/checkpoints/
+/data/
 
 # Python
 __pycache__/
