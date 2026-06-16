@@ -1,0 +1,35 @@
+# @package _global_
+
+# https://wandb.ai
+logger:
+  wandb:
+    _target_: lightning.pytorch.loggers.wandb.WandbLogger
+
+    # Run name encodes model + problem + size. Overridable from CLI:
+    #   python train.py logger.wandb.name=my_run
+    name: "pomo-tsp-n${env.generator_params.num_loc}"
+
+    # Tag every run with model, problem family, and graph size so runs are
+    # easy to filter on the wandb dashboard.
+    tags:
+      - "model:pomo"
+      - "problem:tsp"
+      - "size:${env.generator_params.num_loc}"
+
+    job_type: "train"
+
+    save_dir: "${paths.output_dir}"
+    offline: False
+    id: null # pass correct id to resume experiment!
+    anonymous: null # enable anonymous logging
+    project: "rl4co-pomo-tsp"
+    log_model: False # upload lightning ckpts
+    prefix: "" # a string to put at the beginning of metric keys
+    group: ""
+
+hydra:
+  run:
+    dir: ${paths.log_dir}/${mode}/runs/${logger.wandb.group}/${logger.wandb.name}/${now:%Y-%m-%d}_${now:%H-%M-%S}
+  sweep:
+    dir: ${paths.log_dir}/${mode}/multiruns/${logger.wandb.group}/${logger.wandb.name}/${now:%Y-%m-%d}_${now:%H-%M-%S}
+    subdir: ${hydra.job.num}

@@ -1,0 +1,63 @@
+# @package _global_
+
+# order of defaults determines precedence; later entries override earlier ones
+defaults:
+  - _self_
+  - callbacks: default.yaml
+  - hydra: default.yaml
+  - logger: wandb
+  - trainer: default.yaml
+  - paths: default.yaml
+  - extras: default.yaml
+
+# task name, determines output directory path
+mode: "train"
+
+# tags to help you identify your experiments
+tags: ["pomo", "tsp"]
+
+# set False to skip model training
+train: True
+
+# evaluate on test set, using best model weights achieved during training
+test: True
+
+# compile model for faster training with pytorch 2.0
+compile: False
+
+# provide a checkpoint path to resume training (null = start from scratch)
+ckpt_path: null
+
+# https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html
+matmul_precision: "medium"
+
+# ----- experiment-specific config -----
+
+env:
+  _target_: rl4co.envs.TSPEnv
+  generator_params:
+    num_loc: 100
+
+model:
+  _target_: rl4co.models.POMO
+  num_loc: ${env.generator_params.num_loc}
+
+  # POMO only supports the shared baseline
+  baseline: shared
+  num_augment: 8
+
+  batch_size: 128
+  train_data_size: 100_000
+  val_data_size: 10_000
+  test_data_size: 10_000
+
+  optimizer_kwargs:
+    lr: 1e-4
+
+  metrics:
+    train: ["loss", "reward"]
+    val: ["reward", "max_reward", "max_aug_reward"]
+    test: ${model.metrics.val}
+    log_on_step: True
+
+seed: 42
