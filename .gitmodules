@@ -1,3 +1,8 @@
 [submodule "experiments/learn_decompose_eval/cvrp-decomposition"]
 	path = experiments/learn_decompose_eval/cvrp-decomposition
 	url = https://github.com/alberto-santini/cvrp-decomposition
+
+[submodule "experiments/decompose-on-edges/NeuroLKH"]
+	path = experiments/decompose-on-edges/NeuroLKH
+	url = https://github.com/liangxinedu/NeuroLKH
+	branch = main

@@ -194,3 +194,9 @@ experiments/POMO_eval/LKH-3.0.14/LKH
 experiments/POMO_eval/LKH-3.0.14/whizzkids96.atsp
 experiments/POMO_eval/LKH-3.0.14/whizzkids96.par
 experiments/POMO_eval/LKH-3.0.14/pr2392.par
+
+experiments/decompose-on-edges/figures
+experiments/decompose-on-edges/NeuroLKH/LKH
+experiments/decompose-on-edges/NeuroLKH/SRC/OBJ/
+experiments/decompose-on-edges/NeuroLKH/SRC_swig/build/
+experiments/decompose-on-edges/NeuroLKH/_LKH*.so
