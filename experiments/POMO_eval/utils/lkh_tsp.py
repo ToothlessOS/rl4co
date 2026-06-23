@@ -33,6 +33,7 @@ from __future__ import annotations
 
 import os
 import subprocess
+import sys
 import tempfile
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -42,23 +43,76 @@ from tensordict import TensorDict
 
 # LDE building blocks. Imported at module load with a try/except so a
 # missing PYTHONPATH fails loudly at the first LKH-3 call (not at import).
-try:
-    from learn_decompose_eval.solvers.lkh_format import (  # type: ignore
-        LKHParameters,
-        write_lkh_problem,
-        parse_tour_with_cost,
-        LKH_SCALING_FACTOR,
-    )
-    from learn_decompose_eval.solvers.classical_lkh import (  # type: ignore
-        _resolve_lkh_binary,
-    )
-    _LDE_AVAILABLE = True
-except ImportError as _lde_err:  # pragma: no cover
-    _LDE_AVAILABLE = False
-    _LDE_IMPORT_ERROR = _lde_err
-    LKHParameters = write_lkh_problem = parse_tour_with_cost = None  # type: ignore
-    LKH_SCALING_FACTOR = 100_000  # safe default
-    _resolve_lkh_binary = None  # type: ignore
+def _import_lde():
+    """Import the LDE building blocks, bootstrapping ``sys.path`` if needed.
+
+    The caller is expected to either export ``PYTHONPATH=.../learn_decompose_eval``
+    (the LDE convention) or invoke this module from a script whose working
+    directory is a sibling of ``learn_decompose_eval`` (the POMO_eval
+    convention). We try the explicit PYTHONPATH route first, then fall
+    back to deriving the path from this file's location — so the module
+    "just works" regardless of the user's shell setup.
+    """
+    try:
+        from learn_decompose_eval.solvers.lkh_format import (  # type: ignore
+            LKHParameters,
+            write_lkh_problem,
+            parse_tour_with_cost,
+            LKH_SCALING_FACTOR,
+        )
+        from learn_decompose_eval.solvers.classical_lkh import (  # type: ignore
+            _resolve_lkh_binary,
+        )
+        return (
+            LKHParameters,
+            write_lkh_problem,
+            parse_tour_with_cost,
+            LKH_SCALING_FACTOR,
+            _resolve_lkh_binary,
+            None,
+        )
+    except ImportError as err:
+        # Fallback: derive the LDE root from this file's path. This file lives at
+        # ``<repo>/experiments/POMO_eval/utils/lkh_tsp.py``; LDE lives at the
+        # sibling ``<repo>/experiments/learn_decompose_eval/``.
+        here = Path(__file__).resolve().parent
+        candidates = [
+            here.parent.parent / "learn_decompose_eval",  # sibling experiment dir
+        ]
+        for cand in candidates:
+            if cand.is_dir():
+                sys.path.insert(0, str(cand))
+        try:
+            from learn_decompose_eval.solvers.lkh_format import (  # type: ignore
+                LKHParameters,
+                write_lkh_problem,
+                parse_tour_with_cost,
+                LKH_SCALING_FACTOR,
+            )
+            from learn_decompose_eval.solvers.classical_lkh import (  # type: ignore
+                _resolve_lkh_binary,
+            )
+            return (
+                LKHParameters,
+                write_lkh_problem,
+                parse_tour_with_cost,
+                LKH_SCALING_FACTOR,
+                _resolve_lkh_binary,
+                None,
+            )
+        except ImportError as err2:
+            return None, None, None, 100_000, None, err2
+
+
+(
+    LKHParameters,
+    write_lkh_problem,
+    parse_tour_with_cost,
+    LKH_SCALING_FACTOR,
+    _resolve_lkh_binary,
+    _LDE_IMPORT_ERROR,
+) = _import_lde()
+_LDE_AVAILABLE = _resolve_lkh_binary is not None
 
 
 def _require_lde():

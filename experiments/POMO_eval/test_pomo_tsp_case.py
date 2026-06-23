@@ -11,6 +11,8 @@ from omegaconf import OmegaConf
 from rl4co.envs import TSPEnv
 from rl4co.models import POMO
 
+from utils.gmm_tsp import GMMSampler
+
 # Hydra configs (CLI overrides supported, e.g.
 # python test_pomo_tsp.py seed=99 ckpt_path=/abs/path/last.ckpt)
 ROOT_DIR = "./"
@@ -54,7 +56,13 @@ ckpt_path = resolve_ckpt_path()
 print(f"Using checkpoint: {ckpt_path}")
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
-env = TSPEnv(generator_params=dict(cfg.env.generator_params))
+# ``OmegaConf.to_container`` returns a plain Python dict — `dict(cfg...)`
+# preserves OmegaConf's struct flag and rejects unknown keys.
+gen_params = OmegaConf.to_container(cfg.env.generator_params, resolve=True)
+gen_params["loc_sampler"] = GMMSampler(
+    num_modes=5, std=0.1, seed=cfg.get("seed") or 0
+)
+env = TSPEnv(generator_params=gen_params)
 model = POMO.load_from_checkpoint(ckpt_path, env=env, weights_only=False).to(device)
 
 # Run inference on test data (n=3)
@@ -73,6 +81,7 @@ improved_rewards = env.get_reward(td_init, improved_actions)
 
 # Plotting
 import matplotlib
+
 matplotlib.use("Agg")  # non-interactive; plt.show() below is a no-op then
 import matplotlib.pyplot as plt
 
@@ -100,7 +109,9 @@ from utils.lkh_tsp import _resolve_lkh_binary, solve_lkh3_tsp_batch
 # compare all three methods on identical instances.
 
 n_fig = 3
-binary = _resolve_lkh_binary(None)
+binary = _resolve_lkh_binary(
+    binary_path="/home/toothlessos/Projects/nrp/rl4co/experiments/POMO_eval/LKH-3.0.14/LKH"
+)
 print(f"Using LKH-3 binary: {binary}")
 
 fig_perms, fig_lengths = solve_lkh3_tsp_batch(
@@ -111,8 +122,7 @@ fig_perms, fig_lengths = solve_lkh3_tsp_batch(
 )
 # Convert LKH-3 permutations to a torch tensor for the renderer.
 lkh_actions = torch.tensor(
-    [p if p is not None else list(range(td_init["locs"].shape[1]))
-     for p in fig_perms],
+    [p if p is not None else list(range(td_init["locs"].shape[1])) for p in fig_perms],
     dtype=torch.long,
 )
 lkh_lengths = torch.tensor(
@@ -123,9 +133,9 @@ lkh_lengths = torch.tensor(
 # ---- Figure A: 3 (instances) x 3 (methods) route grid ----------------------
 fig, axs = plt.subplots(n_fig, 3, figsize=(13, 4 * n_fig))
 methods = [
-    ("POMO greedy",  actions,          -out["reward"].to("cpu")),
+    ("POMO greedy", actions, -out["reward"].to("cpu")),
     ("POMO + 2-opt", improved_actions, -improved_rewards.to("cpu")),
-    ("LKH-3",        lkh_actions,      lkh_lengths),
+    ("LKH-3", lkh_actions, lkh_lengths),
 ]
 for r in range(n_fig):
     for c, (label, acts, lens) in enumerate(methods):
@@ -175,16 +185,17 @@ print(f"  All three methods done for the histogram batch.")
 fig, ax = plt.subplots(figsize=(8, 5))
 bins = 20
 ax.hist(greedy_l.numpy(), bins=bins, alpha=0.5, label="POMO greedy", color="C0")
-ax.hist(opt_l.numpy(),    bins=bins, alpha=0.5, label="POMO + 2-opt", color="C1")
-ax.hist(lkh_l.numpy(),    bins=bins, alpha=0.5, label="LKH-3", color="C2")
+ax.hist(opt_l.numpy(), bins=bins, alpha=0.5, label="POMO + 2-opt", color="C1")
+ax.hist(lkh_l.numpy(), bins=bins, alpha=0.5, label="LKH-3", color="C2")
 for arr, label, color in [
     (greedy_l, "POMO greedy", "C0"),
-    (opt_l,    "POMO + 2-opt", "C1"),
-    (lkh_l,    "LKH-3", "C2"),
+    (opt_l, "POMO + 2-opt", "C1"),
+    (lkh_l, "LKH-3", "C2"),
 ]:
     m = torch.nanmean(arr).item()
-    ax.axvline(m, color=color, linestyle="--", linewidth=1.5,
-               label=f"mean {label} = {m:.3f}")
+    ax.axvline(
+        m, color=color, linestyle="--", linewidth=1.5, label=f"mean {label} = {m:.3f}"
+    )
 ax.set_xlabel("Tour length (Euclidean)")
 ax.set_ylabel("Count")
 ax.set_title(
@@ -197,6 +208,7 @@ fig.savefig("figures/pomo_vs_lkh3_histogram.png", dpi=120, bbox_inches="tight")
 plt.show(block=False)
 plt.pause(0.5)
 
+
 # ---- Console summary --------------------------------------------------------
 def _stats(arr: torch.Tensor) -> str:
     finite = arr[~torch.isnan(arr)]
@@ -204,23 +216,24 @@ def _stats(arr: torch.Tensor) -> str:
         return "no finite samples"
     return f"mean = {finite.mean():.3f}  std = {finite.std():.3f}  (n={finite.numel()})"
 
+
 print(
     f"\n=== Test 2: POMO vs LKH-3 ({HIST_BATCH} instances, "
     f"TSP-{td_init['locs'].shape[1]}) ==="
 )
 for label, arr in [
-    ("POMO greedy",  greedy_l),
+    ("POMO greedy", greedy_l),
     ("POMO + 2-opt", opt_l),
-    ("LKH-3",        lkh_l),
+    ("LKH-3", lkh_l),
 ]:
     print(f"  {label:14s}  {_stats(arr)}")
 
 # Pairwise win/tie/loss: POMO+2opt vs LKH-3, only over finite pairs.
 both_finite = ~torch.isnan(opt_l) & ~torch.isnan(lkh_l)
 pomo_wins = ((opt_l < lkh_l) & both_finite).sum().item()
-ties      = ((opt_l == lkh_l) & both_finite).sum().item()
-lkh_wins  = ((opt_l > lkh_l) & both_finite).sum().item()
-n_both    = both_finite.sum().item()
+ties = ((opt_l == lkh_l) & both_finite).sum().item()
+lkh_wins = ((opt_l > lkh_l) & both_finite).sum().item()
+n_both = both_finite.sum().item()
 print(
     f"  POMO+2opt wins: {pomo_wins}   ties: {ties}   "
     f"LKH-3 wins: {lkh_wins}   (over {n_both} finite pairs of {HIST_BATCH})"

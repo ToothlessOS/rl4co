@@ -1,0 +1,566 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '../LKH'
+relocations:
+  - { offset: 0x19, size: 0x8, addend: 0x0, symName: _C_EXPLICIT, symObjAddr: 0x0, symBinAddr: 0x1000007A0, symSize: 0x28 }
+  - { offset: 0x39, size: 0x8, addend: 0x0, symName: _C_EXPLICIT, symObjAddr: 0x0, symBinAddr: 0x1000007A0, symSize: 0x28 }
+  - { offset: 0x3C2, size: 0x8, addend: 0x0, symName: _C_FUNCTION, symObjAddr: 0x28, symBinAddr: 0x1000007C8, symSize: 0x1C4 }
+  - { offset: 0x4B7, size: 0x8, addend: 0x0, symName: _D_EXPLICIT, symObjAddr: 0x1EC, symBinAddr: 0x10000098C, symSize: 0x54 }
+  - { offset: 0x4F6, size: 0x8, addend: 0x0, symName: _D_FUNCTION, symObjAddr: 0x240, symBinAddr: 0x1000009E0, symSize: 0x8C }
+  - { offset: 0x535, size: 0x8, addend: 0x0, symName: _c_EUC_2D, symObjAddr: 0x2CC, symBinAddr: 0x100000A6C, symSize: 0x7C }
+  - { offset: 0x5BB, size: 0x8, addend: 0x0, symName: _c_EUC_3D, symObjAddr: 0x348, symBinAddr: 0x100000AE8, symSize: 0x98 }
+  - { offset: 0x64E, size: 0x8, addend: 0x0, symName: _c_GEO, symObjAddr: 0x3E0, symBinAddr: 0x100000B80, symSize: 0xC0 }
+  - { offset: 0x6F9, size: 0x8, addend: 0x0, symName: _c_GEOM, symObjAddr: 0x4A0, symBinAddr: 0x100000C40, symSize: 0x80 }
+  - { offset: 0x760, size: 0x8, addend: 0x0, symName: _c_GEO_MEEUS, symObjAddr: 0x520, symBinAddr: 0x100000CC0, symSize: 0xE0 }
+  - { offset: 0x80B, size: 0x8, addend: 0x0, symName: _c_GEOM_MEEUS, symObjAddr: 0x600, symBinAddr: 0x100000DA0, symSize: 0xA8 }
+  - { offset: 0x872, size: 0x8, addend: 0x0, symName: _c_ATT, symObjAddr: 0x6A8, symBinAddr: 0x100000E48, symSize: 0x84 }
+  - { offset: 0x8F8, size: 0x8, addend: 0x0, symName: _c_CEIL_2D, symObjAddr: 0x72C, symBinAddr: 0x100000ECC, symSize: 0x78 }
+  - { offset: 0x97E, size: 0x8, addend: 0x0, symName: _c_CEIL_3D, symObjAddr: 0x7A4, symBinAddr: 0x100000F44, symSize: 0x9C }
+  - { offset: 0xA11, size: 0x8, addend: 0x0, symName: _c_FLOOR_2D, symObjAddr: 0x840, symBinAddr: 0x100000FE0, symSize: 0x80 }
+  - { offset: 0xA97, size: 0x8, addend: 0x0, symName: _c_FLOOR_3D, symObjAddr: 0x8C0, symBinAddr: 0x100001060, symSize: 0xA0 }
+  - { offset: 0xB26, size: 0x8, addend: 0x0, symName: _Activate, symObjAddr: 0x960, symBinAddr: 0x100001100, symSize: 0x120 }
+  - { offset: 0xBB1, size: 0x8, addend: 0x0, symName: _AdjustCandidateSet, symObjAddr: 0xA80, symBinAddr: 0x100001220, symSize: 0x20C }
+  - { offset: 0xC56, size: 0x8, addend: 0x0, symName: _AllocateSegments, symObjAddr: 0xC8C, symBinAddr: 0x10000142C, symSize: 0x1D4 }
+  - { offset: 0xCB9, size: 0x8, addend: 0x0, symName: _AllocateSegments, symObjAddr: 0xC8C, symBinAddr: 0x10000142C, symSize: 0x1D4 }
+  - { offset: 0xE00, size: 0x8, addend: 0x0, symName: _Between_SL, symObjAddr: 0xE60, symBinAddr: 0x100001600, symSize: 0x150 }
+  - { offset: 0xEAC, size: 0x8, addend: 0x0, symName: _Between, symObjAddr: 0xFB0, symBinAddr: 0x100001750, symSize: 0x60 }
+  - { offset: 0xF29, size: 0x8, addend: 0x0, symName: _Between_SSL, symObjAddr: 0x1010, symBinAddr: 0x1000017B0, symSize: 0x258 }
+  - { offset: 0x1002, size: 0x8, addend: 0x0, symName: _BuildSubKDTree.lto_priv.0, symObjAddr: 0x1268, symBinAddr: 0x100001A08, symSize: 0x584 }
+  - { offset: 0x11B8, size: 0x8, addend: 0x0, symName: _BuildKDTree, symObjAddr: 0x17EC, symBinAddr: 0x100001F8C, symSize: 0x94 }
+  - { offset: 0x1207, size: 0x8, addend: 0x0, symName: _AddCandidate, symObjAddr: 0x1880, symBinAddr: 0x100002020, symSize: 0x124 }
+  - { offset: 0x1282, size: 0x8, addend: 0x0, symName: _AddTourCandidates, symObjAddr: 0x19A4, symBinAddr: 0x100002144, symSize: 0x304 }
+  - { offset: 0x12ED, size: 0x8, addend: 0x0, symName: _AddExtraCandidates, symObjAddr: 0x1CA8, symBinAddr: 0x100002448, symSize: 0x2B8 }
+  - { offset: 0x13B7, size: 0x8, addend: 0x0, symName: _AdjustClusters, symObjAddr: 0x1F60, symBinAddr: 0x100002700, symSize: 0x2F0 }
+  - { offset: 0x14B2, size: 0x8, addend: 0x0, symName: _AllocateStructures, symObjAddr: 0x2250, symBinAddr: 0x1000029F0, symSize: 0x4F0 }
+  - { offset: 0x1540, size: 0x8, addend: 0x0, symName: _CandidateReport, symObjAddr: 0x2740, symBinAddr: 0x100002EE0, symSize: 0x260 }
+  - { offset: 0x160C, size: 0x8, addend: 0x0, symName: _Ascent, symObjAddr: 0x29A0, symBinAddr: 0x100003140, symSize: 0x820 }
+  - { offset: 0x1729, size: 0x8, addend: 0x0, symName: _Best2OptMove, symObjAddr: 0x31C0, symBinAddr: 0x100003960, symSize: 0x820 }
+  - { offset: 0x19C3, size: 0x8, addend: 0x0, symName: _Best3OptMove, symObjAddr: 0x39E0, symBinAddr: 0x100004180, symSize: 0xE40 }
+  - { offset: 0x1DF1, size: 0x8, addend: 0x0, symName: _Best4OptMove, symObjAddr: 0x4820, symBinAddr: 0x100004FC0, symSize: 0x18A0 }
+  - { offset: 0x2545, size: 0x8, addend: 0x0, symName: _Best5OptMove, symObjAddr: 0x60C0, symBinAddr: 0x100006860, symSize: 0x336C }
+  - { offset: 0x3048, size: 0x8, addend: 0x0, symName: _BestKOptMoveRec.lto_priv.0, symObjAddr: 0x942C, symBinAddr: 0x100009BCC, symSize: 0x1404 }
+  - { offset: 0x34DC, size: 0x8, addend: 0x0, symName: _BestKOptMove, symObjAddr: 0xA830, symBinAddr: 0x10000AFD0, symSize: 0x2AF8 }
+  - { offset: 0x3D85, size: 0x8, addend: 0x0, symName: _BridgeGain, symObjAddr: 0xD328, symBinAddr: 0x10000DAC8, symSize: 0x1250 }
+  - { offset: 0x40F0, size: 0x8, addend: 0x0, symName: _Scale, symBinAddr: 0x100054298, symSize: 0x0 }
+  - { offset: 0x4106, size: 0x8, addend: 0x0, symName: _PredSucCostAvailable, symBinAddr: 0x100054274, symSize: 0x0 }
+  - { offset: 0x411C, size: 0x8, addend: 0x0, symName: _CostMatrix, symBinAddr: 0x1000541A8, symSize: 0x0 }
+  - { offset: 0x4136, size: 0x8, addend: 0x0, symName: _KDTree.lto_priv.0, symObjAddr: 0x37F58, symBinAddr: 0x100054020, symSize: 0x0 }
+  - { offset: 0x4150, size: 0x8, addend: 0x0, symName: _cutoff.lto_priv.0, symObjAddr: 0x37F60, symBinAddr: 0x100054028, symSize: 0x0 }
+  - { offset: 0x416A, size: 0x8, addend: 0x0, symName: _tp1.lto_priv.0, symObjAddr: 0x37F68, symBinAddr: 0x100054030, symSize: 0x0 }
+  - { offset: 0x4180, size: 0x8, addend: 0x0, symName: _PatchingCExtended, symBinAddr: 0x100054268, symSize: 0x0 }
+  - { offset: 0x4196, size: 0x8, addend: 0x0, symName: _PatchingCRestricted, symBinAddr: 0x10005426C, symSize: 0x0 }
+  - { offset: 0x41AC, size: 0x8, addend: 0x0, symName: _SubsequentPatching, symBinAddr: 0x1000542AC, symSize: 0x0 }
+  - { offset: 0x41C2, size: 0x8, addend: 0x0, symName: _PatchingA, symBinAddr: 0x100054260, symSize: 0x0 }
+  - { offset: 0x41D8, size: 0x8, addend: 0x0, symName: _PatchingC, symBinAddr: 0x100054264, symSize: 0x0 }
+  - { offset: 0x41EE, size: 0x8, addend: 0x0, symName: _NonsequentialMoveType, symBinAddr: 0x10005424C, symSize: 0x0 }
+  - { offset: 0x4208, size: 0x8, addend: 0x0, symName: _BestG2.lto_priv.0, symObjAddr: 0x37F70, symBinAddr: 0x100054038, symSize: 0x0 }
+  - { offset: 0x421E, size: 0x8, addend: 0x0, symName: _K, symBinAddr: 0x100054228, symSize: 0x0 }
+  - { offset: 0x4234, size: 0x8, addend: 0x0, symName: _RestrictedSearch, symBinAddr: 0x100054288, symSize: 0x0 }
+  - { offset: 0x424A, size: 0x8, addend: 0x0, symName: _BestSubsequentMove, symBinAddr: 0x100054168, symSize: 0x0 }
+  - { offset: 0x4284, size: 0x8, addend: 0x0, symName: _Swaps, symBinAddr: 0x1000542B8, symSize: 0x0 }
+  - { offset: 0x429A, size: 0x8, addend: 0x0, symName: _Backtracking, symBinAddr: 0x100054160, symSize: 0x0 }
+  - { offset: 0x42B0, size: 0x8, addend: 0x0, symName: _MaxBreadth, symBinAddr: 0x100054238, symSize: 0x0 }
+  - { offset: 0x42C6, size: 0x8, addend: 0x0, symName: _c, symBinAddr: 0x1000542D0, symSize: 0x0 }
+  - { offset: 0x42F6, size: 0x8, addend: 0x0, symName: _GainCriterionUsed, symBinAddr: 0x100054200, symSize: 0x0 }
+  - { offset: 0x430C, size: 0x8, addend: 0x0, symName: _Reversed, symBinAddr: 0x10005428C, symSize: 0x0 }
+  - { offset: 0x4329, size: 0x8, addend: 0x0, symName: _InitialStepSize, symBinAddr: 0x100054224, symSize: 0x0 }
+  - { offset: 0x433F, size: 0x8, addend: 0x0, symName: _InitialPeriod, symBinAddr: 0x100054220, symSize: 0x0 }
+  - { offset: 0x4355, size: 0x8, addend: 0x0, symName: _TraceLevel, symBinAddr: 0x1000542C8, symSize: 0x0 }
+  - { offset: 0x436B, size: 0x8, addend: 0x0, symName: _Precision, symBinAddr: 0x100054270, symSize: 0x0 }
+  - { offset: 0x4381, size: 0x8, addend: 0x0, symName: _Optimum, symBinAddr: 0x100054258, symSize: 0x0 }
+  - { offset: 0x4397, size: 0x8, addend: 0x0, symName: _Norm, symBinAddr: 0x100054250, symSize: 0x0 }
+  - { offset: 0x43AD, size: 0x8, addend: 0x0, symName: _Subgradient, symBinAddr: 0x1000542A0, symSize: 0x0 }
+  - { offset: 0x43C3, size: 0x8, addend: 0x0, symName: _ExtraCandidateSetSymmetric, symBinAddr: 0x1000541C8, symSize: 0x0 }
+  - { offset: 0x43D9, size: 0x8, addend: 0x0, symName: _ExtraCandidateSetType, symBinAddr: 0x1000541CC, symSize: 0x0 }
+  - { offset: 0x43EF, size: 0x8, addend: 0x0, symName: _ExtraCandidates, symBinAddr: 0x1000541D0, symSize: 0x0 }
+  - { offset: 0x4405, size: 0x8, addend: 0x0, symName: _MaxCandidates, symBinAddr: 0x10005423C, symSize: 0x0 }
+  - { offset: 0x441B, size: 0x8, addend: 0x0, symName: _AscentCandidates, symBinAddr: 0x10005415C, symSize: 0x0 }
+  - { offset: 0x4431, size: 0x8, addend: 0x0, symName: _CandidateSetType, symBinAddr: 0x1000541A0, symSize: 0x0 }
+  - { offset: 0x4447, size: 0x8, addend: 0x0, symName: _FirstSSegment, symBinAddr: 0x1000541E8, symSize: 0x0 }
+  - { offset: 0x445D, size: 0x8, addend: 0x0, symName: _SGroups, symBinAddr: 0x100054294, symSize: 0x0 }
+  - { offset: 0x4473, size: 0x8, addend: 0x0, symName: _SGroupSize, symBinAddr: 0x100054290, symSize: 0x0 }
+  - { offset: 0x4489, size: 0x8, addend: 0x0, symName: _FirstSegment, symBinAddr: 0x1000541F0, symSize: 0x0 }
+  - { offset: 0x449F, size: 0x8, addend: 0x0, symName: _Groups, symBinAddr: 0x100054208, symSize: 0x0 }
+  - { offset: 0x44B5, size: 0x8, addend: 0x0, symName: _GroupSize, symBinAddr: 0x100054204, symSize: 0x0 }
+  - { offset: 0x44CF, size: 0x8, addend: 0x0, symName: _arr.lto_priv.0, symObjAddr: 0x37F78, symBinAddr: 0x100054040, symSize: 0x0 }
+  - { offset: 0x44FC, size: 0x8, addend: 0x0, symName: _b.lto_priv.0, symObjAddr: 0xE6FC, symBinAddr: 0x100054000, symSize: 0x0 }
+  - { offset: 0x4516, size: 0x8, addend: 0x0, symName: _a.lto_priv.0, symObjAddr: 0x38054, symBinAddr: 0x10005411C, symSize: 0x0 }
+  - { offset: 0x4530, size: 0x8, addend: 0x0, symName: _initialized.lto_priv.0, symObjAddr: 0x38058, symBinAddr: 0x100054120, symSize: 0x0 }
+  - { offset: 0x4546, size: 0x8, addend: 0x0, symName: _MaxSwaps, symBinAddr: 0x100054240, symSize: 0x0 }
+  - { offset: 0x455C, size: 0x8, addend: 0x0, symName: _cycle, symBinAddr: 0x1000542D8, symSize: 0x0 }
+  - { offset: 0x4572, size: 0x8, addend: 0x0, symName: _incl, symBinAddr: 0x1000542E0, symSize: 0x0 }
+  - { offset: 0x4588, size: 0x8, addend: 0x0, symName: _SubsequentMoveType, symBinAddr: 0x1000542A8, symSize: 0x0 }
+  - { offset: 0x459E, size: 0x8, addend: 0x0, symName: _MoveType, symBinAddr: 0x100054248, symSize: 0x0 }
+  - { offset: 0x45B4, size: 0x8, addend: 0x0, symName: _CacheMask, symBinAddr: 0x100054188, symSize: 0x0 }
+  - { offset: 0x45CA, size: 0x8, addend: 0x0, symName: _WeightType, symBinAddr: 0x1000542CC, symSize: 0x0 }
+  - { offset: 0x45E0, size: 0x8, addend: 0x0, symName: _Seed, symBinAddr: 0x10005429C, symSize: 0x0 }
+  - { offset: 0x45FD, size: 0x8, addend: 0x0, symName: _Dimension, symBinAddr: 0x1000541B8, symSize: 0x0 }
+  - { offset: 0x4613, size: 0x8, addend: 0x0, symName: _tSaved, symBinAddr: 0x100054300, symSize: 0x0 }
+  - { offset: 0x4629, size: 0x8, addend: 0x0, symName: _SwapStack, symBinAddr: 0x1000542B0, symSize: 0x0 }
+  - { offset: 0x4680, size: 0x8, addend: 0x0, symName: _q, symBinAddr: 0x1000542F0, symSize: 0x0 }
+  - { offset: 0x4696, size: 0x8, addend: 0x0, symName: _p, symBinAddr: 0x1000542E8, symSize: 0x0 }
+  - { offset: 0x46AC, size: 0x8, addend: 0x0, symName: _t, symBinAddr: 0x1000542F8, symSize: 0x0 }
+  - { offset: 0x46C2, size: 0x8, addend: 0x0, symName: _G, symBinAddr: 0x1000541F8, symSize: 0x0 }
+  - { offset: 0x46D8, size: 0x8, addend: 0x0, symName: _T, symBinAddr: 0x1000542C0, symSize: 0x0 }
+  - { offset: 0x46EE, size: 0x8, addend: 0x0, symName: _CacheVal, symBinAddr: 0x100054198, symSize: 0x0 }
+  - { offset: 0x4704, size: 0x8, addend: 0x0, symName: _CacheSig, symBinAddr: 0x100054190, symSize: 0x0 }
+  - { offset: 0x471A, size: 0x8, addend: 0x0, symName: _Rand, symBinAddr: 0x100054280, symSize: 0x0 }
+  - { offset: 0x4736, size: 0x8, addend: 0x0, symName: _HTable, symBinAddr: 0x100054210, symSize: 0x0 }
+  - { offset: 0x47A7, size: 0x8, addend: 0x0, symName: _BetterTour, symBinAddr: 0x100054178, symSize: 0x0 }
+  - { offset: 0x47BD, size: 0x8, addend: 0x0, symName: _BestTour, symBinAddr: 0x100054170, symSize: 0x0 }
+  - { offset: 0x47D7, size: 0x8, addend: 0x0, symName: _HeapCapacity.lto_priv.0, symObjAddr: 0x3805C, symBinAddr: 0x100054124, symSize: 0x0 }
+  - { offset: 0x47ED, size: 0x8, addend: 0x0, symName: _Heap, symBinAddr: 0x100054218, symSize: 0x0 }
+  - { offset: 0x4807, size: 0x8, addend: 0x0, symName: _HeapCount.lto_priv.0, symObjAddr: 0x38060, symBinAddr: 0x100054128, symSize: 0x0 }
+  - { offset: 0x481D, size: 0x8, addend: 0x0, symName: _SubproblemSize, symBinAddr: 0x1000542A4, symSize: 0x0 }
+  - { offset: 0x4833, size: 0x8, addend: 0x0, symName: _C, symBinAddr: 0x100054180, symSize: 0x0 }
+  - { offset: 0x4849, size: 0x8, addend: 0x0, symName: _ProblemType, symBinAddr: 0x100054278, symSize: 0x0 }
+  - { offset: 0x485F, size: 0x8, addend: 0x0, symName: _D, symBinAddr: 0x1000541B0, symSize: 0x0 }
+  - { offset: 0x4875, size: 0x8, addend: 0x0, symName: _Distance, symBinAddr: 0x1000541C0, symSize: 0x0 }
+  - { offset: 0x488B, size: 0x8, addend: 0x0, symName: _CoordType, symBinAddr: 0x1000541A4, symSize: 0x0 }
+  - { offset: 0x48A1, size: 0x8, addend: 0x0, symName: _DimensionSaved, symBinAddr: 0x1000541BC, symSize: 0x0 }
+  - { offset: 0x48B7, size: 0x8, addend: 0x0, symName: _FirstNode, symBinAddr: 0x1000541E0, symSize: 0x0 }
+  - { offset: 0x48CD, size: 0x8, addend: 0x0, symName: _MergeTourFiles, symBinAddr: 0x100054244, symSize: 0x0 }
+  - { offset: 0x48E3, size: 0x8, addend: 0x0, symName: _LastActive, symBinAddr: 0x100054230, symSize: 0x0 }
+  - { offset: 0x48F9, size: 0x8, addend: 0x0, symName: _FirstActive, symBinAddr: 0x1000541D8, symSize: 0x0 }
+  - { offset: 0x491B, size: 0x8, addend: 0x0, symName: _Distance_1, symObjAddr: 0x0, symBinAddr: 0x10000ED20, symSize: 0x8 }
+  - { offset: 0x493B, size: 0x8, addend: 0x0, symName: _Distance_1, symObjAddr: 0x0, symBinAddr: 0x10000ED20, symSize: 0x8 }
+  - { offset: 0x4CC8, size: 0x8, addend: 0x0, symName: _compareX.lto_priv.0.lto_priv.0, symObjAddr: 0x8, symBinAddr: 0x10000ED28, symSize: 0x3C }
+  - { offset: 0x4D49, size: 0x8, addend: 0x0, symName: _flip, symObjAddr: 0x44, symBinAddr: 0x10000ED64, symSize: 0xE8 }
+  - { offset: 0x4DCF, size: 0x8, addend: 0x0, symName: _Contains3D, symObjAddr: 0x12C, symBinAddr: 0x10000EE4C, symSize: 0x194 }
+  - { offset: 0x4E1E, size: 0x8, addend: 0x0, symName: _Contains2D, symObjAddr: 0x2C0, symBinAddr: 0x10000EFE0, symSize: 0xC0 }
+  - { offset: 0x4E6D, size: 0x8, addend: 0x0, symName: _BoxOverlaps3D, symObjAddr: 0x380, symBinAddr: 0x10000F0A0, symSize: 0x36C }
+  - { offset: 0x4EBE, size: 0x8, addend: 0x0, symName: _BoxOverlaps2D, symObjAddr: 0x6EC, symBinAddr: 0x10000F40C, symSize: 0x13C }
+  - { offset: 0x4F0A, size: 0x8, addend: 0x0, symName: _ComputeBounds, symObjAddr: 0x828, symBinAddr: 0x10000F548, symSize: 0x2B8 }
+  - { offset: 0x4F98, size: 0x8, addend: 0x0, symName: _Overlaps, symObjAddr: 0xAE0, symBinAddr: 0x10000F800, symSize: 0xA8 }
+  - { offset: 0x4FF9, size: 0x8, addend: 0x0, symName: _compare, symObjAddr: 0xB88, symBinAddr: 0x10000F8A8, symSize: 0x3C }
+  - { offset: 0x507E, size: 0x8, addend: 0x0, symName: _delete_edge, symObjAddr: 0xBC4, symBinAddr: 0x10000F8E4, symSize: 0x108 }
+  - { offset: 0x5195, size: 0x8, addend: 0x0, symName: _Distance_LARGE, symObjAddr: 0xCCC, symBinAddr: 0x10000F9EC, symSize: 0x14 }
+  - { offset: 0x51D2, size: 0x8, addend: 0x0, symName: _Distance_ATSP, symObjAddr: 0xCE0, symBinAddr: 0x10000FA00, symSize: 0x80 }
+  - { offset: 0x521D, size: 0x8, addend: 0x0, symName: _Distance_MAN_2D, symObjAddr: 0xD88, symBinAddr: 0x10000FAA8, symSize: 0x38 }
+  - { offset: 0x525A, size: 0x8, addend: 0x0, symName: _Distance_MAN_3D, symObjAddr: 0xDC0, symBinAddr: 0x10000FAE0, symSize: 0x44 }
+  - { offset: 0x5297, size: 0x8, addend: 0x0, symName: _Distance_MAX_2D, symObjAddr: 0xE04, symBinAddr: 0x10000FB24, symSize: 0x40 }
+  - { offset: 0x52F6, size: 0x8, addend: 0x0, symName: _Distance_MAX_3D, symObjAddr: 0xE44, symBinAddr: 0x10000FB64, symSize: 0x5C }
+  - { offset: 0x5361, size: 0x8, addend: 0x0, symName: _Distance_XRAY1, symObjAddr: 0xEA0, symBinAddr: 0x10000FBC0, symSize: 0x6C }
+  - { offset: 0x53D9, size: 0x8, addend: 0x0, symName: _Distance_XRAY2, symObjAddr: 0xF0C, symBinAddr: 0x10000FC2C, symSize: 0x94 }
+  - { offset: 0x5443, size: 0x8, addend: 0x0, symName: _SplitSegment, symObjAddr: 0xFA0, symBinAddr: 0x10000FCC0, symSize: 0x260 }
+  - { offset: 0x5576, size: 0x8, addend: 0x0, symName: _SplitSSegment, symObjAddr: 0x1200, symBinAddr: 0x10000FF20, symSize: 0x260 }
+  - { offset: 0x5683, size: 0x8, addend: 0x0, symName: _Distance_TOR_2D, symObjAddr: 0x1460, symBinAddr: 0x100010180, symSize: 0x68 }
+  - { offset: 0x56E0, size: 0x8, addend: 0x0, symName: _Distance_TOR_3D, symObjAddr: 0x14C8, symBinAddr: 0x1000101E8, symSize: 0x88 }
+  - { offset: 0x574D, size: 0x8, addend: 0x0, symName: _Distance_EUC_2D, symObjAddr: 0x1550, symBinAddr: 0x100010270, symSize: 0x3C }
+  - { offset: 0x57A9, size: 0x8, addend: 0x0, symName: _Distance_EUC_3D, symObjAddr: 0x158C, symBinAddr: 0x1000102AC, symSize: 0x54 }
+  - { offset: 0x5814, size: 0x8, addend: 0x0, symName: _Distance_SPECIAL, symObjAddr: 0x15E0, symBinAddr: 0x100010300, symSize: 0x70 }
+  - { offset: 0x5893, size: 0x8, addend: 0x0, symName: _join, symObjAddr: 0x1650, symBinAddr: 0x100010370, symSize: 0x1D8 }
+  - { offset: 0x590C, size: 0x8, addend: 0x0, symName: _join, symObjAddr: 0x1650, symBinAddr: 0x100010370, symSize: 0x1D8 }
+  - { offset: 0x5931, size: 0x8, addend: 0x0, symName: _join, symObjAddr: 0x1650, symBinAddr: 0x100010370, symSize: 0x1D8 }
+  - { offset: 0x5A5B, size: 0x8, addend: 0x0, symName: _divide, symObjAddr: 0x1828, symBinAddr: 0x100010548, symSize: 0x758 }
+  - { offset: 0x5DC7, size: 0x8, addend: 0x0, symName: _Distance_ATT, symObjAddr: 0x1F80, symBinAddr: 0x100010CA0, symSize: 0x40 }
+  - { offset: 0x5E23, size: 0x8, addend: 0x0, symName: _Distance_CEIL_2D, symObjAddr: 0x1FC0, symBinAddr: 0x100010CE0, symSize: 0x40 }
+  - { offset: 0x5E7F, size: 0x8, addend: 0x0, symName: _Distance_CEIL_3D, symObjAddr: 0x2000, symBinAddr: 0x100010D20, symSize: 0x48 }
+  - { offset: 0x5EEA, size: 0x8, addend: 0x0, symName: _Distance_FLOOR_2D, symObjAddr: 0x2048, symBinAddr: 0x100010D68, symSize: 0x38 }
+  - { offset: 0x5F46, size: 0x8, addend: 0x0, symName: _Distance_FLOOR_3D, symObjAddr: 0x2080, symBinAddr: 0x100010DA0, symSize: 0x48 }
+  - { offset: 0x5FB1, size: 0x8, addend: 0x0, symName: _Distance_GEO, symObjAddr: 0x20C8, symBinAddr: 0x100010DE8, symSize: 0x128 }
+  - { offset: 0x6078, size: 0x8, addend: 0x0, symName: _Distance_GEOM, symObjAddr: 0x21F0, symBinAddr: 0x100010F10, symSize: 0x11C }
+  - { offset: 0x612B, size: 0x8, addend: 0x0, symName: _Meeus.part.0, symObjAddr: 0x230C, symBinAddr: 0x10001102C, symSize: 0x154 }
+  - { offset: 0x6194, size: 0x8, addend: 0x0, symName: _Distance_GEO_MEEUS, symObjAddr: 0x2460, symBinAddr: 0x100011180, symSize: 0xE0 }
+  - { offset: 0x625F, size: 0x8, addend: 0x0, symName: _Distance_GEOM_MEEUS, symObjAddr: 0x2540, symBinAddr: 0x100011260, symSize: 0x80 }
+  - { offset: 0x6326, size: 0x8, addend: 0x0, symName: _Connect, symObjAddr: 0x25C0, symBinAddr: 0x1000112E0, symSize: 0x340 }
+  - { offset: 0x6458, size: 0x8, addend: 0x0, symName: _free_memory, symObjAddr: 0x2900, symBinAddr: 0x100011620, symSize: 0x40 }
+  - { offset: 0x6472, size: 0x8, addend: 0x0, symName: _delaunay, symObjAddr: 0x2940, symBinAddr: 0x100011660, symSize: 0x390 }
+  - { offset: 0x652D, size: 0x8, addend: 0x0, symName: _eprintf, symObjAddr: 0x2CD0, symBinAddr: 0x1000119F0, symSize: 0x98 }
+  - { offset: 0x657C, size: 0x8, addend: 0x0, symName: _Excludable, symObjAddr: 0x2D68, symBinAddr: 0x100011A88, symSize: 0x44 }
+  - { offset: 0x65B5, size: 0x8, addend: 0x0, symName: _Exclude, symObjAddr: 0x2DAC, symBinAddr: 0x100011ACC, symSize: 0x84 }
+  - { offset: 0x6611, size: 0x8, addend: 0x0, symName: _FixedOrCommonCandidates, symObjAddr: 0x2E30, symBinAddr: 0x100011B50, symSize: 0x190 }
+  - { offset: 0x6684, size: 0x8, addend: 0x0, symName: _Flip, symObjAddr: 0x2FC0, symBinAddr: 0x100011CE0, symSize: 0x200 }
+  - { offset: 0x6770, size: 0x8, addend: 0x0, symName: _Flip_SL, symObjAddr: 0x31C0, symBinAddr: 0x100011EE0, symSize: 0x6A0 }
+  - { offset: 0x68F1, size: 0x8, addend: 0x0, symName: _Flip_SSL, symObjAddr: 0x3860, symBinAddr: 0x100012580, symSize: 0xA08 }
+  - { offset: 0x6B85, size: 0x8, addend: 0x0, symName: _ChooseInitialTour, symObjAddr: 0x4268, symBinAddr: 0x100012F88, symSize: 0x858 }
+  - { offset: 0x6CE4, size: 0x8, addend: 0x0, symName: _ERXT, symObjAddr: 0x4AC0, symBinAddr: 0x1000137E0, symSize: 0x690 }
+  - { offset: 0x6DF1, size: 0x8, addend: 0x0, symName: _CreateNNCandidateSet, symObjAddr: 0x5150, symBinAddr: 0x100013E70, symSize: 0x330 }
+  - { offset: 0x6ED2, size: 0x8, addend: 0x0, symName: _CreateDelaunayCandidateSet, symObjAddr: 0x5480, symBinAddr: 0x1000141A0, symSize: 0x680 }
+  - { offset: 0x702B, size: 0x8, addend: 0x0, symName: _optimize_path, symObjAddr: 0x5B00, symBinAddr: 0x100014820, symSize: 0x1B60 }
+  - { offset: 0x7AA7, size: 0x8, addend: 0x0, symName: _build_path, symObjAddr: 0x7660, symBinAddr: 0x100016380, symSize: 0x828 }
+  - { offset: 0x7C77, size: 0x8, addend: 0x0, symName: _Create_POPMUSIC_CandidateSet, symObjAddr: 0x7E88, symBinAddr: 0x100016BA8, symSize: 0xED8 }
+  - { offset: 0x80DB, size: 0x8, addend: 0x0, symName: _NQN, symObjAddr: 0x8D60, symBinAddr: 0x100017A80, symSize: 0x480 }
+  - { offset: 0x821E, size: 0x8, addend: 0x0, symName: _CreateQuadrantCandidateSet, symObjAddr: 0x91E0, symBinAddr: 0x100017F00, symSize: 0x7A0 }
+  - { offset: 0x839A, size: 0x8, addend: 0x0, symName: _CreateNearestNeighborCandidateSet, symObjAddr: 0x9980, symBinAddr: 0x1000186A0, symSize: 0x5E4 }
+  - { offset: 0x84B6, size: 0x8, addend: 0x0, symName: _CreateCandidateSet, symObjAddr: 0x9F64, symBinAddr: 0x100018C84, symSize: 0x85C }
+  - { offset: 0x8549, size: 0x8, addend: 0x0, symName: _CreateCandidateSet, symObjAddr: 0x9F64, symBinAddr: 0x100018C84, symSize: 0x85C }
+  - { offset: 0x868D, size: 0x8, addend: 0x0, symName: _FindTour, symObjAddr: 0xA7C0, symBinAddr: 0x1000194E0, symSize: 0xCC4 }
+  - { offset: 0x86E0, size: 0x8, addend: 0x0, symName: _FindTour, symObjAddr: 0xA7C0, symBinAddr: 0x1000194E0, symSize: 0xCC4 }
+  - { offset: 0x891E, size: 0x8, addend: 0x0, symName: _BackboneTrials, symBinAddr: 0x100054308, symSize: 0x0 }
+  - { offset: 0x8934, size: 0x8, addend: 0x0, symName: _Hash, symBinAddr: 0x100054338, symSize: 0x0 }
+  - { offset: 0x894A, size: 0x8, addend: 0x0, symName: _StopAtOptimum, symBinAddr: 0x1000543B8, symSize: 0x0 }
+  - { offset: 0x8960, size: 0x8, addend: 0x0, symName: _OutputTourFileName, symBinAddr: 0x100054380, symSize: 0x0 }
+  - { offset: 0x897C, size: 0x8, addend: 0x0, symName: _BestCost, symBinAddr: 0x100054310, symSize: 0x0 }
+  - { offset: 0x8992, size: 0x8, addend: 0x0, symName: _MergeWithTour, symBinAddr: 0x100054370, symSize: 0x0 }
+  - { offset: 0x89B7, size: 0x8, addend: 0x0, symName: _TotalTimeLimit, symBinAddr: 0x1000543C8, symSize: 0x0 }
+  - { offset: 0x89CD, size: 0x8, addend: 0x0, symName: _StartTime, symBinAddr: 0x1000543B0, symSize: 0x0 }
+  - { offset: 0x89E3, size: 0x8, addend: 0x0, symName: _TimeLimit, symBinAddr: 0x1000543C0, symSize: 0x0 }
+  - { offset: 0x89F9, size: 0x8, addend: 0x0, symName: _OrdinalTourCost, symObjAddr: 0x32B00, symBinAddr: 0x100054620, symSize: 0x0 }
+  - { offset: 0x8A0F, size: 0x8, addend: 0x0, symName: _Run, symBinAddr: 0x1000543A8, symSize: 0x0 }
+  - { offset: 0x8A25, size: 0x8, addend: 0x0, symName: _FirstFree, symObjAddr: 0x32B08, symBinAddr: 0x100054628, symSize: 0x0 }
+  - { offset: 0x8A3B, size: 0x8, addend: 0x0, symName: _Tabu, symObjAddr: 0x32B10, symBinAddr: 0x100054630, symSize: 0x0 }
+  - { offset: 0x8A51, size: 0x8, addend: 0x0, symName: _LastLine, symBinAddr: 0x100054358, symSize: 0x0 }
+  - { offset: 0x8A67, size: 0x8, addend: 0x0, symName: _GridSize, symBinAddr: 0x100054330, symSize: 0x0 }
+  - { offset: 0x8A7D, size: 0x8, addend: 0x0, symName: _M, symBinAddr: 0x100054368, symSize: 0x0 }
+  - { offset: 0x8A94, size: 0x8, addend: 0x0, symName: _n_free_e, symObjAddr: 0x32B14, symBinAddr: 0x100054634, symSize: 0x0 }
+  - { offset: 0x8AAA, size: 0x8, addend: 0x0, symName: _Level.lto_priv.1, symObjAddr: 0x32B18, symBinAddr: 0x100054638, symSize: 0x0 }
+  - { offset: 0x8AC0, size: 0x8, addend: 0x0, symName: _Radius, symObjAddr: 0x32B1C, symBinAddr: 0x10005463C, symSize: 0x0 }
+  - { offset: 0x8AD6, size: 0x8, addend: 0x0, symName: _Candidates, symObjAddr: 0x32B20, symBinAddr: 0x100054640, symSize: 0x0 }
+  - { offset: 0x8AEC, size: 0x8, addend: 0x0, symName: _CandidateSet, symObjAddr: 0x32B28, symBinAddr: 0x100054648, symSize: 0x0 }
+  - { offset: 0x8B02, size: 0x8, addend: 0x0, symName: _BoxOverlaps, symObjAddr: 0x32B30, symBinAddr: 0x100054650, symSize: 0x0 }
+  - { offset: 0x8B37, size: 0x8, addend: 0x0, symName: _Contains, symObjAddr: 0x32B38, symBinAddr: 0x100054658, symSize: 0x0 }
+  - { offset: 0x8B57, size: 0x8, addend: 0x0, symName: _ZMax, symObjAddr: 0x32B40, symBinAddr: 0x100054660, symSize: 0x0 }
+  - { offset: 0x8B73, size: 0x8, addend: 0x0, symName: _ZMin, symObjAddr: 0x32B48, symBinAddr: 0x100054668, symSize: 0x0 }
+  - { offset: 0x8B89, size: 0x8, addend: 0x0, symName: _YMax, symObjAddr: 0x32B50, symBinAddr: 0x100054670, symSize: 0x0 }
+  - { offset: 0x8B9F, size: 0x8, addend: 0x0, symName: _YMin, symObjAddr: 0x32B58, symBinAddr: 0x100054678, symSize: 0x0 }
+  - { offset: 0x8BB5, size: 0x8, addend: 0x0, symName: _XMax, symObjAddr: 0x32B60, symBinAddr: 0x100054680, symSize: 0x0 }
+  - { offset: 0x8BCB, size: 0x8, addend: 0x0, symName: _XMin, symObjAddr: 0x32B68, symBinAddr: 0x100054688, symSize: 0x0 }
+  - { offset: 0x8BE1, size: 0x8, addend: 0x0, symName: _KDTree.lto_priv.1, symObjAddr: 0x32B70, symBinAddr: 0x100054690, symSize: 0x0 }
+  - { offset: 0x8BF7, size: 0x8, addend: 0x0, symName: _POPMUSIC_MaxNeighbors, symBinAddr: 0x10005438C, symSize: 0x0 }
+  - { offset: 0x8C0E, size: 0x8, addend: 0x0, symName: _neighbor, symObjAddr: 0x32B78, symBinAddr: 0x100054698, symSize: 0x0 }
+  - { offset: 0x8C25, size: 0x8, addend: 0x0, symName: _neighbors, symObjAddr: 0x32B80, symBinAddr: 0x1000546A0, symSize: 0x0 }
+  - { offset: 0x8C3C, size: 0x8, addend: 0x0, symName: _reversed, symObjAddr: 0x32B88, symBinAddr: 0x1000546A8, symSize: 0x0 }
+  - { offset: 0x8C53, size: 0x8, addend: 0x0, symName: _tourLength, symObjAddr: 0x32B90, symBinAddr: 0x1000546B0, symSize: 0x0 }
+  - { offset: 0x8C6A, size: 0x8, addend: 0x0, symName: _dontLook, symObjAddr: 0x32B98, symBinAddr: 0x1000546B8, symSize: 0x0 }
+  - { offset: 0x8C81, size: 0x8, addend: 0x0, symName: _dist, symObjAddr: 0x32BA0, symBinAddr: 0x1000546C0, symSize: 0x0 }
+  - { offset: 0x8C98, size: 0x8, addend: 0x0, symName: _pos, symObjAddr: 0x32BA8, symBinAddr: 0x1000546C8, symSize: 0x0 }
+  - { offset: 0x8CAF, size: 0x8, addend: 0x0, symName: _tour, symObjAddr: 0x32BB0, symBinAddr: 0x1000546D0, symSize: 0x0 }
+  - { offset: 0x8CC6, size: 0x8, addend: 0x0, symName: _n, symObjAddr: 0x32BB8, symBinAddr: 0x1000546D8, symSize: 0x0 }
+  - { offset: 0x8CDC, size: 0x8, addend: 0x0, symName: _POPMUSIC_Trials, symBinAddr: 0x100054398, symSize: 0x0 }
+  - { offset: 0x8CF2, size: 0x8, addend: 0x0, symName: _POPMUSIC_Solutions, symBinAddr: 0x100054394, symSize: 0x0 }
+  - { offset: 0x8D08, size: 0x8, addend: 0x0, symName: _InitialTourFileName, symBinAddr: 0x100054340, symSize: 0x0 }
+  - { offset: 0x8D1E, size: 0x8, addend: 0x0, symName: _POPMUSIC_InitialTour, symBinAddr: 0x100054388, symSize: 0x0 }
+  - { offset: 0x8D34, size: 0x8, addend: 0x0, symName: _POPMUSIC_SampleSize, symBinAddr: 0x100054390, symSize: 0x0 }
+  - { offset: 0x8D4A, size: 0x8, addend: 0x0, symName: _node_path, symObjAddr: 0x32BC0, symBinAddr: 0x1000546E0, symSize: 0x0 }
+  - { offset: 0x8D60, size: 0x8, addend: 0x0, symName: _node, symObjAddr: 0x32BC8, symBinAddr: 0x1000546E8, symSize: 0x0 }
+  - { offset: 0x8D7B, size: 0x8, addend: 0x0, symName: _free_list_e.lto_priv.0, symObjAddr: 0x32BD8, symBinAddr: 0x100054130, symSize: 0x0 }
+  - { offset: 0x8D96, size: 0x8, addend: 0x0, symName: _e_array.lto_priv.0, symObjAddr: 0x32BE0, symBinAddr: 0x100054138, symSize: 0x0 }
+  - { offset: 0x8DAD, size: 0x8, addend: 0x0, symName: _p_array, symBinAddr: 0x1000543D8, symSize: 0x0 }
+  - { offset: 0x8DC3, size: 0x8, addend: 0x0, symName: _Level.lto_priv.0, symObjAddr: 0x32BD0, symBinAddr: 0x1000546F0, symSize: 0x0 }
+  - { offset: 0x8DD9, size: 0x8, addend: 0x0, symName: _EdgeFiles, symBinAddr: 0x100054324, symSize: 0x0 }
+  - { offset: 0x8DEF, size: 0x8, addend: 0x0, symName: _Excess, symBinAddr: 0x100054328, symSize: 0x0 }
+  - { offset: 0x8E05, size: 0x8, addend: 0x0, symName: _LowerBound, symBinAddr: 0x100054360, symSize: 0x0 }
+  - { offset: 0x8E1B, size: 0x8, addend: 0x0, symName: _PiFile, symBinAddr: 0x1000543A0, symSize: 0x0 }
+  - { offset: 0x900C, size: 0x8, addend: 0x0, symName: _CandidateSetSymmetric, symBinAddr: 0x100054320, symSize: 0x0 }
+  - { offset: 0x9022, size: 0x8, addend: 0x0, symName: _NodeSet, symBinAddr: 0x100054378, symSize: 0x0 }
+  - { offset: 0x9038, size: 0x8, addend: 0x0, symName: _BetterCost, symBinAddr: 0x100054318, symSize: 0x0 }
+  - { offset: 0x904E, size: 0x8, addend: 0x0, symName: _MaxTrials, symBinAddr: 0x10005436C, symSize: 0x0 }
+  - { offset: 0x9064, size: 0x8, addend: 0x0, symName: _InitialTourAlgorithm, symBinAddr: 0x10005433C, symSize: 0x0 }
+  - { offset: 0x907A, size: 0x8, addend: 0x0, symName: _InitialTourFraction, symBinAddr: 0x100054348, symSize: 0x0 }
+  - { offset: 0x9090, size: 0x8, addend: 0x0, symName: _Trial, symBinAddr: 0x1000543D0, symSize: 0x0 }
+  - { offset: 0x90A6, size: 0x8, addend: 0x0, symName: _Kicks, symBinAddr: 0x100054354, symSize: 0x0 }
+  - { offset: 0x90BC, size: 0x8, addend: 0x0, symName: _KickType, symBinAddr: 0x100054350, symSize: 0x0 }
+  - { offset: 0x90FA, size: 0x8, addend: 0x0, symName: _DistanceToIndividual, symObjAddr: 0x0, symBinAddr: 0x10001A1C0, symSize: 0xA0 }
+  - { offset: 0x94BB, size: 0x8, addend: 0x0, symName: _compareCost, symObjAddr: 0xA0, symBinAddr: 0x10001A260, symSize: 0x20 }
+  - { offset: 0x9504, size: 0x8, addend: 0x0, symName: _NearestInList, symObjAddr: 0xC0, symBinAddr: 0x10001A280, symSize: 0x14C }
+  - { offset: 0x95C1, size: 0x8, addend: 0x0, symName: _compare, symObjAddr: 0x248, symBinAddr: 0x10001A408, symSize: 0x18 }
+  - { offset: 0x9600, size: 0x8, addend: 0x0, symName: _Forbidden, symObjAddr: 0x260, symBinAddr: 0x10001A420, symSize: 0x48 }
+  - { offset: 0x9641, size: 0x8, addend: 0x0, symName: _FreeStructures, symObjAddr: 0x2A8, symBinAddr: 0x10001A468, symSize: 0x378 }
+  - { offset: 0x9654, size: 0x8, addend: 0x0, symName: _FreeStructures, symObjAddr: 0x2A8, symBinAddr: 0x10001A468, symSize: 0x378 }
+  - { offset: 0x9725, size: 0x8, addend: 0x0, symName: _FreePopulation, symObjAddr: 0x620, symBinAddr: 0x10001A7E0, symSize: 0xA0 }
+  - { offset: 0x9762, size: 0x8, addend: 0x0, symName: _FreeSegments, symObjAddr: 0x6C0, symBinAddr: 0x10001A880, symSize: 0x80 }
+  - { offset: 0x98C9, size: 0x8, addend: 0x0, symName: _FreeCandidateSets, symObjAddr: 0x740, symBinAddr: 0x10001A900, symSize: 0x60 }
+  - { offset: 0x98F8, size: 0x8, addend: 0x0, symName: _fscanint, symObjAddr: 0x7A0, symBinAddr: 0x10001A960, symSize: 0x120 }
+  - { offset: 0x9B80, size: 0x8, addend: 0x0, symName: _IsCommonEdge, symObjAddr: 0x8C0, symBinAddr: 0x10001AA80, symSize: 0x60 }
+  - { offset: 0x9BC9, size: 0x8, addend: 0x0, symName: _AddToPopulation, symObjAddr: 0x920, symBinAddr: 0x10001AAE0, symSize: 0x164 }
+  - { offset: 0x9C2F, size: 0x8, addend: 0x0, symName: _HasFitness, symObjAddr: 0xA84, symBinAddr: 0x10001AC44, symSize: 0x6C }
+  - { offset: 0x9C92, size: 0x8, addend: 0x0, symName: _MergeTourWithIndividual, symObjAddr: 0xAF0, symBinAddr: 0x10001ACB0, symSize: 0xB0 }
+  - { offset: 0x9CFB, size: 0x8, addend: 0x0, symName: _ReplaceIndividualWithTour, symObjAddr: 0xBA0, symBinAddr: 0x10001AD60, symSize: 0x180 }
+  - { offset: 0x9D6A, size: 0x8, addend: 0x0, symName: _ReplacementIndividual, symObjAddr: 0xD20, symBinAddr: 0x10001AEE0, symSize: 0x12C }
+  - { offset: 0x9E05, size: 0x8, addend: 0x0, symName: _GEO2XYZ, symObjAddr: 0xE4C, symBinAddr: 0x10001B00C, symSize: 0xF4 }
+  - { offset: 0x9EBE, size: 0x8, addend: 0x0, symName: _XYZ2GEO, symObjAddr: 0xF40, symBinAddr: 0x10001B100, symSize: 0xCC }
+  - { offset: 0x9F49, size: 0x8, addend: 0x0, symName: _GEOM2XYZ, symObjAddr: 0x100C, symBinAddr: 0x10001B1CC, symSize: 0xB4 }
+  - { offset: 0x9FDC, size: 0x8, addend: 0x0, symName: _XYZ2GEOM, symObjAddr: 0x10C0, symBinAddr: 0x10001B280, symSize: 0x8C }
+  - { offset: 0xA04B, size: 0x8, addend: 0x0, symName: _GetTime, symObjAddr: 0x114C, symBinAddr: 0x10001B30C, symSize: 0x5C }
+  - { offset: 0xA183, size: 0x8, addend: 0x0, symName: _HeapSiftUp, symObjAddr: 0x11A8, symBinAddr: 0x10001B368, symSize: 0x80 }
+  - { offset: 0xA1CC, size: 0x8, addend: 0x0, symName: _HashInitialize, symObjAddr: 0x1228, symBinAddr: 0x10001B3E8, symSize: 0x38 }
+  - { offset: 0xA269, size: 0x8, addend: 0x0, symName: _HashInsert, symObjAddr: 0x1260, symBinAddr: 0x10001B420, symSize: 0xC0 }
+  - { offset: 0xA2D6, size: 0x8, addend: 0x0, symName: _HashSearch, symObjAddr: 0x1320, symBinAddr: 0x10001B4E0, symSize: 0x80 }
+  - { offset: 0xA33B, size: 0x8, addend: 0x0, symName: _HeapMake, symObjAddr: 0x13A0, symBinAddr: 0x10001B560, symSize: 0x44 }
+  - { offset: 0xA366, size: 0x8, addend: 0x0, symName: _HeapSiftDown, symObjAddr: 0x13E4, symBinAddr: 0x10001B5A4, symSize: 0xDC }
+  - { offset: 0xA3B3, size: 0x8, addend: 0x0, symName: _HeapDeleteMin, symObjAddr: 0x14C0, symBinAddr: 0x10001B680, symSize: 0x60 }
+  - { offset: 0xA3DE, size: 0x8, addend: 0x0, symName: _Heapify, symObjAddr: 0x1520, symBinAddr: 0x10001B6E0, symSize: 0x50 }
+  - { offset: 0xA409, size: 0x8, addend: 0x0, symName: _HeapDelete, symObjAddr: 0x1570, symBinAddr: 0x10001B730, symSize: 0xE0 }
+  - { offset: 0xA467, size: 0x8, addend: 0x0, symName: _HeapLazyInsert.part.0, symObjAddr: 0xE234, symBinAddr: 0x1000433F4, symSize: 0x28 }
+  - { offset: 0xA483, size: 0x8, addend: 0x0, symName: _HeapLazyInsert, symObjAddr: 0x1650, symBinAddr: 0x10001B810, symSize: 0x50 }
+  - { offset: 0xA4AE, size: 0x8, addend: 0x0, symName: _HeapInsert, symObjAddr: 0x16A0, symBinAddr: 0x10001B860, symSize: 0xC0 }
+  - { offset: 0xA4D5, size: 0x8, addend: 0x0, symName: _HeapInsert, symObjAddr: 0x16A0, symBinAddr: 0x10001B860, symSize: 0xC0 }
+  - { offset: 0xA521, size: 0x8, addend: 0x0, symName: _IsBackboneCandidate, symObjAddr: 0x1760, symBinAddr: 0x10001B920, symSize: 0x30 }
+  - { offset: 0xA5A2, size: 0x8, addend: 0x0, symName: _IsCandidate, symObjAddr: 0x1790, symBinAddr: 0x10001B950, symSize: 0x30 }
+  - { offset: 0xA5EF, size: 0x8, addend: 0x0, symName: _LinearSelection, symObjAddr: 0x17C0, symBinAddr: 0x10001B980, symSize: 0x10C }
+  - { offset: 0xA65B, size: 0x8, addend: 0x0, symName: _NearestNeighbor, symObjAddr: 0x18CC, symBinAddr: 0x10001BA8C, symSize: 0x474 }
+  - { offset: 0xA7E3, size: 0x8, addend: 0x0, symName: _RandomNode, symObjAddr: 0x1D40, symBinAddr: 0x10001BF00, symSize: 0x280 }
+  - { offset: 0xA880, size: 0x8, addend: 0x0, symName: _KSwapKick, symObjAddr: 0x1FC0, symBinAddr: 0x10001C180, symSize: 0x54C }
+  - { offset: 0xA9DC, size: 0x8, addend: 0x0, symName: _MergeTourWithBestTour, symObjAddr: 0x250C, symBinAddr: 0x10001C6CC, symSize: 0x118 }
+  - { offset: 0xAA69, size: 0x8, addend: 0x0, symName: _insert_ghost, symObjAddr: 0x2624, symBinAddr: 0x10001C7E4, symSize: 0x7C }
+  - { offset: 0xAAF0, size: 0x8, addend: 0x0, symName: _weight, symObjAddr: 0x26A0, symBinAddr: 0x10001C860, symSize: 0x64 }
+  - { offset: 0xAB4F, size: 0x8, addend: 0x0, symName: _d4_vertices_id, symObjAddr: 0x2704, symBinAddr: 0x10001C8C4, symSize: 0x30C }
+  - { offset: 0xAC57, size: 0x8, addend: 0x0, symName: _ghostPair, symObjAddr: 0x2A10, symBinAddr: 0x10001CBD0, symSize: 0x30 }
+  - { offset: 0xACA2, size: 0x8, addend: 0x0, symName: _tableCode, symObjAddr: 0x2A40, symBinAddr: 0x10001CC00, symSize: 0x88 }
+  - { offset: 0xAD73, size: 0x8, addend: 0x0, symName: _simplifyPaths, symObjAddr: 0x2AC8, symBinAddr: 0x10001CC88, symSize: 0x3D8 }
+  - { offset: 0xAE9F, size: 0x8, addend: 0x0, symName: _tourTable_fill, symObjAddr: 0x2EA0, symBinAddr: 0x10001D060, symSize: 0x444 }
+  - { offset: 0xB242, size: 0x8, addend: 0x0, symName: _d2_vertices_id, symObjAddr: 0x32E4, symBinAddr: 0x10001D4A4, symSize: 0x80 }
+  - { offset: 0xB2AF, size: 0x8, addend: 0x0, symName: _labelsFix, symObjAddr: 0x3364, symBinAddr: 0x10001D524, symSize: 0x280 }
+  - { offset: 0xB380, size: 0x8, addend: 0x0, symName: _tourTable, symObjAddr: 0x35E4, symBinAddr: 0x10001D7A4, symSize: 0x1064 }
+  - { offset: 0xB913, size: 0x8, addend: 0x0, symName: _new_candidates, symObjAddr: 0x4648, symBinAddr: 0x10001E808, symSize: 0x2D8 }
+  - { offset: 0xB9C3, size: 0x8, addend: 0x0, symName: _free_candidates, symObjAddr: 0x4920, symBinAddr: 0x10001EAE0, symSize: 0x160 }
+  - { offset: 0xBA3A, size: 0x8, addend: 0x0, symName: _findInputs, symObjAddr: 0x4A80, symBinAddr: 0x10001EC40, symSize: 0xAE4 }
+  - { offset: 0xBBF9, size: 0x8, addend: 0x0, symName: _testComp, symObjAddr: 0x5564, symBinAddr: 0x10001F724, symSize: 0x968 }
+  - { offset: 0xBF68, size: 0x8, addend: 0x0, symName: _testUnfeasibleComp, symObjAddr: 0x5ECC, symBinAddr: 0x10002008C, symSize: 0x294 }
+  - { offset: 0xC039, size: 0x8, addend: 0x0, symName: _fusion, symObjAddr: 0x6160, symBinAddr: 0x100020320, symSize: 0x320 }
+  - { offset: 0xC0DC, size: 0x8, addend: 0x0, symName: _Make2OptMove, symObjAddr: 0x6480, symBinAddr: 0x100020640, symSize: 0x4 }
+  - { offset: 0xC137, size: 0x8, addend: 0x0, symName: _ApplyCrossover, symObjAddr: 0x6484, symBinAddr: 0x100020644, symSize: 0xE4 }
+  - { offset: 0xC1A2, size: 0x8, addend: 0x0, symName: _PrintPopulation, symObjAddr: 0x6568, symBinAddr: 0x100020728, symSize: 0x11C }
+  - { offset: 0xC1D1, size: 0x8, addend: 0x0, symName: _GreedyTour, symObjAddr: 0x6684, symBinAddr: 0x100020844, symSize: 0x1184 }
+  - { offset: 0xC694, size: 0x8, addend: 0x0, symName: _MergeWithTourIPT, symObjAddr: 0x7808, symBinAddr: 0x1000219C8, symSize: 0x7E4 }
+  - { offset: 0xC82B, size: 0x8, addend: 0x0, symName: _Make3OptMove, symObjAddr: 0x7FEC, symBinAddr: 0x1000221AC, symSize: 0xE4 }
+  - { offset: 0xC8EA, size: 0x8, addend: 0x0, symName: _Make4OptMove, symObjAddr: 0x80D0, symBinAddr: 0x100022290, symSize: 0x33C }
+  - { offset: 0xC998, size: 0x8, addend: 0x0, symName: _Gain23, symObjAddr: 0x840C, symBinAddr: 0x1000225CC, symSize: 0x1378 }
+  - { offset: 0xCCDE, size: 0x8, addend: 0x0, symName: _Make5OptMove, symObjAddr: 0x9784, symBinAddr: 0x100023944, symSize: 0x135C }
+  - { offset: 0xCDAA, size: 0x8, addend: 0x0, symName: _IsPossibleCandidate, symObjAddr: 0xAAE0, symBinAddr: 0x100024CA0, symSize: 0x2EC }
+  - { offset: 0xCE1D, size: 0x8, addend: 0x0, symName: _IsPossibleCandidate, symObjAddr: 0xAAE0, symBinAddr: 0x100024CA0, symSize: 0x2EC }
+  - { offset: 0xCEE0, size: 0x8, addend: 0x0, symName: _GenerateCandidates, symObjAddr: 0xADCC, symBinAddr: 0x100024F8C, symSize: 0x654 }
+  - { offset: 0xD0BE, size: 0x8, addend: 0x0, symName: _LinKernighan, symObjAddr: 0xB420, symBinAddr: 0x1000255E0, symSize: 0x1020 }
+  - { offset: 0xD422, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0xE260, symBinAddr: 0x100043420, symSize: 0xAA4 }
+  - { offset: 0xD6BC, size: 0x8, addend: 0x0, symName: _MakeKOptMove, symObjAddr: 0xC440, symBinAddr: 0x100026600, symSize: 0x540 }
+  - { offset: 0xD8C2, size: 0x8, addend: 0x0, symName: _fusionB, symObjAddr: 0xC980, symBinAddr: 0x100026B40, symSize: 0xBC0 }
+  - { offset: 0xDC51, size: 0x8, addend: 0x0, symName: _gpx, symObjAddr: 0xD540, symBinAddr: 0x100027700, symSize: 0x3E0 }
+  - { offset: 0xDD78, size: 0x8, addend: 0x0, symName: _gpx, symObjAddr: 0xD540, symBinAddr: 0x100027700, symSize: 0x3E0 }
+  - { offset: 0xDF2C, size: 0x8, addend: 0x0, symName: _MergeWithTourGPX2, symObjAddr: 0xD920, symBinAddr: 0x100027AE0, symSize: 0x598 }
+  - { offset: 0xE034, size: 0x8, addend: 0x0, symName: _red.lto_priv.0, symObjAddr: 0x3EC90, symBinAddr: 0x100054140, symSize: 0x0 }
+  - { offset: 0xE0A0, size: 0x8, addend: 0x0, symName: _blue.lto_priv.0, symObjAddr: 0x3EC98, symBinAddr: 0x100054148, symSize: 0x0 }
+  - { offset: 0xE0B7, size: 0x8, addend: 0x0, symName: _test, symBinAddr: 0x100054498, symSize: 0x0 }
+  - { offset: 0xE0CE, size: 0x8, addend: 0x0, symName: _M_neigh2, symObjAddr: 0x3ECB0, symBinAddr: 0x1000546F8, symSize: 0x0 }
+  - { offset: 0xE0E5, size: 0x8, addend: 0x0, symName: _M_neigh, symObjAddr: 0x3ECB8, symBinAddr: 0x100054700, symSize: 0x0 }
+  - { offset: 0xE0FC, size: 0x8, addend: 0x0, symName: _n_outputs, symObjAddr: 0x3ECC0, symBinAddr: 0x100054708, symSize: 0x0 }
+  - { offset: 0xE113, size: 0x8, addend: 0x0, symName: _n_inputs, symObjAddr: 0x3ECC8, symBinAddr: 0x100054710, symSize: 0x0 }
+  - { offset: 0xE12E, size: 0x8, addend: 0x0, symName: _id.lto_priv.0, symObjAddr: 0x3ECA0, symBinAddr: 0x100054150, symSize: 0x0 }
+  - { offset: 0xE145, size: 0x8, addend: 0x0, symName: _size, symObjAddr: 0x3ECD0, symBinAddr: 0x100054718, symSize: 0x0 }
+  - { offset: 0xE160, size: 0x8, addend: 0x0, symName: _n.lto_priv.0, symObjAddr: 0x3ECA8, symBinAddr: 0x100054158, symSize: 0x0 }
+  - { offset: 0xE176, size: 0x8, addend: 0x0, symName: _n_cand, symBinAddr: 0x100054490, symSize: 0x0 }
+  - { offset: 0xE18C, size: 0x8, addend: 0x0, symName: _Map2Node, symBinAddr: 0x100054430, symSize: 0x0 }
+  - { offset: 0xE1A2, size: 0x8, addend: 0x0, symName: _n_cities, symBinAddr: 0x100054494, symSize: 0x0 }
+  - { offset: 0xE1B8, size: 0x8, addend: 0x0, symName: _Runs, symBinAddr: 0x100054474, symSize: 0x0 }
+  - { offset: 0xE1CE, size: 0x8, addend: 0x0, symName: _TourFileName, symBinAddr: 0x100054480, symSize: 0x0 }
+  - { offset: 0xE1E4, size: 0x8, addend: 0x0, symName: _SierpinskiPartitioning, symBinAddr: 0x100054478, symSize: 0x0 }
+  - { offset: 0xE1FA, size: 0x8, addend: 0x0, symName: _MoorePartitioning, symBinAddr: 0x100054440, symSize: 0x0 }
+  - { offset: 0xE210, size: 0x8, addend: 0x0, symName: _RohePartitioning, symBinAddr: 0x100054470, symSize: 0x0 }
+  - { offset: 0xE226, size: 0x8, addend: 0x0, symName: _KMeansPartitioning, symBinAddr: 0x100054428, symSize: 0x0 }
+  - { offset: 0xE23C, size: 0x8, addend: 0x0, symName: _KCenterPartitioning, symBinAddr: 0x100054424, symSize: 0x0 }
+  - { offset: 0xE252, size: 0x8, addend: 0x0, symName: _KarpPartitioning, symBinAddr: 0x10005442C, symSize: 0x0 }
+  - { offset: 0xE268, size: 0x8, addend: 0x0, symName: _DelaunayPartitioning, symBinAddr: 0x1000543F0, symSize: 0x0 }
+  - { offset: 0xE27E, size: 0x8, addend: 0x0, symName: _Recombination, symBinAddr: 0x10005446C, symSize: 0x0 }
+  - { offset: 0xE294, size: 0x8, addend: 0x0, symName: _MaxMatrixDimension, symBinAddr: 0x100054438, symSize: 0x0 }
+  - { offset: 0xE2AA, size: 0x8, addend: 0x0, symName: _ParameterFileName, symBinAddr: 0x100054458, symSize: 0x0 }
+  - { offset: 0xE2C0, size: 0x8, addend: 0x0, symName: _Gain23Used, symBinAddr: 0x100054420, symSize: 0x0 }
+  - { offset: 0xE2D6, size: 0x8, addend: 0x0, symName: _BestMove, symBinAddr: 0x1000543E0, symSize: 0x0 }
+  - { offset: 0xE316, size: 0x8, addend: 0x0, symName: _EdgesInFragments, symObjAddr: 0x3ECDC, symBinAddr: 0x100054724, symSize: 0x0 }
+  - { offset: 0xE32C, size: 0x8, addend: 0x0, symName: _Cost, symObjAddr: 0x3ECE0, symBinAddr: 0x100054728, symSize: 0x0 }
+  - { offset: 0xE342, size: 0x8, addend: 0x0, symName: _Crossover, symBinAddr: 0x1000543E8, symSize: 0x0 }
+  - { offset: 0xE363, size: 0x8, addend: 0x0, symName: _PopulationSize, symBinAddr: 0x100054468, symSize: 0x0 }
+  - { offset: 0xE379, size: 0x8, addend: 0x0, symName: _Fitness, symBinAddr: 0x100054418, symSize: 0x0 }
+  - { offset: 0xE38F, size: 0x8, addend: 0x0, symName: _MaxPopulationSize, symBinAddr: 0x10005443C, symSize: 0x0 }
+  - { offset: 0xE3A5, size: 0x8, addend: 0x0, symName: _Population, symBinAddr: 0x100054460, symSize: 0x0 }
+  - { offset: 0xE3BB, size: 0x8, addend: 0x0, symName: _DisplayDataType, symBinAddr: 0x1000543F8, symSize: 0x0 }
+  - { offset: 0xE3D1, size: 0x8, addend: 0x0, symName: _NodeCoordType, symBinAddr: 0x100054450, symSize: 0x0 }
+  - { offset: 0xE3E7, size: 0x8, addend: 0x0, symName: _EdgeDataFormat, symBinAddr: 0x100054400, symSize: 0x0 }
+  - { offset: 0xE3FD, size: 0x8, addend: 0x0, symName: _EdgeWeightFormat, symBinAddr: 0x100054408, symSize: 0x0 }
+  - { offset: 0xE413, size: 0x8, addend: 0x0, symName: _EdgeWeightType, symBinAddr: 0x100054410, symSize: 0x0 }
+  - { offset: 0xE429, size: 0x8, addend: 0x0, symName: _Type, symBinAddr: 0x100054488, symSize: 0x0 }
+  - { offset: 0xE43F, size: 0x8, addend: 0x0, symName: _Name, symBinAddr: 0x100054448, symSize: 0x0 }
+  - { offset: 0xE461, size: 0x8, addend: 0x0, symName: _BetaValue, symObjAddr: 0x0, symBinAddr: 0x100028080, symSize: 0x160 }
+  - { offset: 0xE481, size: 0x8, addend: 0x0, symName: _BetaValue, symObjAddr: 0x0, symBinAddr: 0x100028080, symSize: 0x160 }
+  - { offset: 0xE8B6, size: 0x8, addend: 0x0, symName: _Cycle, symObjAddr: 0x160, symBinAddr: 0x1000281E0, symSize: 0x1C0 }
+  - { offset: 0xE982, size: 0x8, addend: 0x0, symName: _ReadYesOrNo, symObjAddr: 0x320, symBinAddr: 0x1000283A0, symSize: 0xD0 }
+  - { offset: 0xE9FF, size: 0x8, addend: 0x0, symName: _GetFileName, symObjAddr: 0x3F0, symBinAddr: 0x100028470, symSize: 0x170 }
+  - { offset: 0xEAEB, size: 0x8, addend: 0x0, symName: _off_gen, symObjAddr: 0x560, symBinAddr: 0x1000285E0, symSize: 0x8E8 }
+  - { offset: 0xEE52, size: 0x8, addend: 0x0, symName: _freeGraph, symObjAddr: 0xE48, symBinAddr: 0x100028EC8, symSize: 0x9C }
+  - { offset: 0xEED6, size: 0x8, addend: 0x0, symName: _insertEdge, symObjAddr: 0xEE4, symBinAddr: 0x100028F64, symSize: 0x7C }
+  - { offset: 0xEF38, size: 0x8, addend: 0x0, symName: _new_Graph, symObjAddr: 0xF60, symBinAddr: 0x100028FE0, symSize: 0x60 }
+  - { offset: 0xEF85, size: 0x8, addend: 0x0, symName: _alloc_vectori, symObjAddr: 0xFC0, symBinAddr: 0x100029040, symSize: 0x30 }
+  - { offset: 0xEFC3, size: 0x8, addend: 0x0, symName: _dealloc_matrixi, symObjAddr: 0xFF0, symBinAddr: 0x100029070, symSize: 0x54 }
+  - { offset: 0xF018, size: 0x8, addend: 0x0, symName: _visitaDfsCC, symObjAddr: 0x1044, symBinAddr: 0x1000290C4, symSize: 0x344 }
+  - { offset: 0xF2F1, size: 0x8, addend: 0x0, symName: _compCon, symObjAddr: 0x1388, symBinAddr: 0x100029408, symSize: 0xFC }
+  - { offset: 0xF3B4, size: 0x8, addend: 0x0, symName: _alloc_matrixi.part.0, symObjAddr: 0x1484, symBinAddr: 0x100029504, symSize: 0x1C }
+  - { offset: 0xF3D8, size: 0x8, addend: 0x0, symName: _alloc_matrixi, symObjAddr: 0x14A0, symBinAddr: 0x100029520, symSize: 0x70 }
+  - { offset: 0xF43C, size: 0x8, addend: 0x0, symName: _valid_tour, symObjAddr: 0x1510, symBinAddr: 0x100029590, symSize: 0x90 }
+  - { offset: 0xF572, size: 0x8, addend: 0x0, symName: _reduce_path_tour2, symObjAddr: 0x15A0, symBinAddr: 0x100029620, symSize: 0xA0 }
+  - { offset: 0xF5D1, size: 0x8, addend: 0x0, symName: _reduce_path_tour1, symObjAddr: 0x1640, symBinAddr: 0x1000296C0, symSize: 0x130 }
+  - { offset: 0xF60D, size: 0x8, addend: 0x0, symName: _find_component_extent, symObjAddr: 0x1770, symBinAddr: 0x1000297F0, symSize: 0x174 }
+  - { offset: 0xF679, size: 0x8, addend: 0x0, symName: _tag_one_component, symObjAddr: 0x18E4, symBinAddr: 0x100029964, symSize: 0x9C }
+  - { offset: 0xF6A6, size: 0x8, addend: 0x0, symName: _tag_all_components, symObjAddr: 0x1980, symBinAddr: 0x100029A00, symSize: 0x1EC }
+  - { offset: 0xF73C, size: 0x8, addend: 0x0, symName: _fuse_components, symObjAddr: 0x1B6C, symBinAddr: 0x100029BEC, symSize: 0x194 }
+  - { offset: 0xF7CB, size: 0x8, addend: 0x0, symName: _validate_components, symObjAddr: 0x1D00, symBinAddr: 0x100029D80, symSize: 0x288 }
+  - { offset: 0xF85E, size: 0x8, addend: 0x0, symName: _generate_offspring, symObjAddr: 0x1F88, symBinAddr: 0x10002A008, symSize: 0xB8 }
+  - { offset: 0xF8BD, size: 0x8, addend: 0x0, symName: _merge_clarist, symObjAddr: 0x2040, symBinAddr: 0x10002A0C0, symSize: 0x448 }
+  - { offset: 0xF955, size: 0x8, addend: 0x0, symName: _NormalizeNodeList, symObjAddr: 0x2488, symBinAddr: 0x10002A508, symSize: 0x7C }
+  - { offset: 0xF98C, size: 0x8, addend: 0x0, symName: _NormalizeSegmentList, symObjAddr: 0x2504, symBinAddr: 0x10002A584, symSize: 0x5C }
+  - { offset: 0xFA47, size: 0x8, addend: 0x0, symName: _printff, symObjAddr: 0x2560, symBinAddr: 0x10002A5E0, symSize: 0x2C }
+  - { offset: 0xFA96, size: 0x8, addend: 0x0, symName: _MergeWithTourCLARIST, symObjAddr: 0x258C, symBinAddr: 0x10002A60C, symSize: 0x5F4 }
+  - { offset: 0xFB79, size: 0x8, addend: 0x0, symName: _PrintParameters, symObjAddr: 0x2B80, symBinAddr: 0x10002AC00, symSize: 0xD00 }
+  - { offset: 0xFBA4, size: 0x8, addend: 0x0, symName: _SRandom, symObjAddr: 0x3880, symBinAddr: 0x10002B900, symSize: 0x144 }
+  - { offset: 0xFC2B, size: 0x8, addend: 0x0, symName: _Random, symObjAddr: 0x39C4, symBinAddr: 0x10002BA44, symSize: 0xA0 }
+  - { offset: 0xFC5A, size: 0x8, addend: 0x0, symName: _ReadLine, symObjAddr: 0x3A64, symBinAddr: 0x10002BAE4, symSize: 0x18C }
+  - { offset: 0xFEA2, size: 0x8, addend: 0x0, symName: _MinimumSpanningTree, symObjAddr: 0x3BF0, symBinAddr: 0x10002BC70, symSize: 0x650 }
+  - { offset: 0x100C2, size: 0x8, addend: 0x0, symName: _Minimum1TreeCost, symObjAddr: 0x4240, symBinAddr: 0x10002C2C0, symSize: 0x280 }
+  - { offset: 0x1012D, size: 0x8, addend: 0x0, symName: _OrderCandidateSet, symObjAddr: 0x44C0, symBinAddr: 0x10002C540, symSize: 0x710 }
+  - { offset: 0x103AC, size: 0x8, addend: 0x0, symName: _PatchCycles, symObjAddr: 0x4BD0, symBinAddr: 0x10002CC50, symSize: 0x470 }
+  - { offset: 0x104F1, size: 0x8, addend: 0x0, symName: _PatchCyclesRec, symObjAddr: 0x5040, symBinAddr: 0x10002D0C0, symSize: 0x1304 }
+  - { offset: 0x10A80, size: 0x8, addend: 0x0, symName: _ReadParameters, symObjAddr: 0x6344, symBinAddr: 0x10002E3C4, symSize: 0x2224 }
+  - { offset: 0x10C8A, size: 0x8, addend: 0x0, symName: _ReadPenalties, symObjAddr: 0x8568, symBinAddr: 0x1000305E8, symSize: 0x278 }
+  - { offset: 0x10CE4, size: 0x8, addend: 0x0, symName: _CheckSpecificationPart, symObjAddr: 0x87E0, symBinAddr: 0x100030860, symSize: 0xE40 }
+  - { offset: 0x10EAD, size: 0x8, addend: 0x0, symName: _CreateNodes, symObjAddr: 0x9620, symBinAddr: 0x1000316A0, symSize: 0x1A8 }
+  - { offset: 0x10EFC, size: 0x8, addend: 0x0, symName: _Read_TOUR_SECTION, symObjAddr: 0x97C8, symBinAddr: 0x100031848, symSize: 0x5BC }
+  - { offset: 0x10F94, size: 0x8, addend: 0x0, symName: _ReadTour, symObjAddr: 0x9D84, symBinAddr: 0x100031E04, symSize: 0x32C }
+  - { offset: 0x11067, size: 0x8, addend: 0x0, symName: _ReadCandidates, symObjAddr: 0xA0B0, symBinAddr: 0x100032130, symSize: 0x550 }
+  - { offset: 0x11175, size: 0x8, addend: 0x0, symName: _ReadEdges.part.0, symObjAddr: 0xA600, symBinAddr: 0x100032680, symSize: 0x6EC }
+  - { offset: 0x11281, size: 0x8, addend: 0x0, symName: _ReadEdges, symObjAddr: 0xACEC, symBinAddr: 0x100032D6C, symSize: 0x34 }
+  - { offset: 0x113E0, size: 0x8, addend: 0x0, symName: _ReadProblem, symObjAddr: 0xAD20, symBinAddr: 0x100032DA0, symSize: 0x31B8 }
+  - { offset: 0x11A07, size: 0x8, addend: 0x0, symName: _MergeTourFile, symBinAddr: 0x1000544D0, symSize: 0x0 }
+  - { offset: 0x11A1D, size: 0x8, addend: 0x0, symName: _SubproblemTourFile, symBinAddr: 0x100054510, symSize: 0x0 }
+  - { offset: 0x11A33, size: 0x8, addend: 0x0, symName: _InputTourFile, symBinAddr: 0x1000544C0, symSize: 0x0 }
+  - { offset: 0x11A49, size: 0x8, addend: 0x0, symName: _InitialTourFile, symBinAddr: 0x1000544B8, symSize: 0x0 }
+  - { offset: 0x11A5F, size: 0x8, addend: 0x0, symName: _Delimiters.lto_priv.1, symObjAddr: 0x11148, symBinAddr: 0x1000482E8, symSize: 0x0 }
+  - { offset: 0x11A86, size: 0x8, addend: 0x0, symName: _WeightFormat, symBinAddr: 0x100054524, symSize: 0x0 }
+  - { offset: 0x11A9C, size: 0x8, addend: 0x0, symName: _ProblemFile, symBinAddr: 0x1000544F8, symSize: 0x0 }
+  - { offset: 0x11AB3, size: 0x8, addend: 0x0, symName: _Delimiters.lto_priv.0, symObjAddr: 0x111A8, symBinAddr: 0x100054008, symSize: 0x0 }
+  - { offset: 0x11AD5, size: 0x8, addend: 0x0, symName: _ParameterFile, symBinAddr: 0x1000544E0, symSize: 0x0 }
+  - { offset: 0x11AEB, size: 0x8, addend: 0x0, symName: _MaxBuffer, symObjAddr: 0x34BA4, symBinAddr: 0x100054744, symSize: 0x0 }
+  - { offset: 0x11B01, size: 0x8, addend: 0x0, symName: _Buffer, symObjAddr: 0x34BA8, symBinAddr: 0x100054748, symSize: 0x0 }
+  - { offset: 0x11B17, size: 0x8, addend: 0x0, symName: _SubproblemTourFileName, symBinAddr: 0x100054518, symSize: 0x0 }
+  - { offset: 0x11B2D, size: 0x8, addend: 0x0, symName: _SubproblemsCompressed, symBinAddr: 0x100054520, symSize: 0x0 }
+  - { offset: 0x11B43, size: 0x8, addend: 0x0, symName: _SubproblemBorders, symBinAddr: 0x100054508, symSize: 0x0 }
+  - { offset: 0x11B59, size: 0x8, addend: 0x0, symName: _ProblemFileName, symBinAddr: 0x100054500, symSize: 0x0 }
+  - { offset: 0x11B6F, size: 0x8, addend: 0x0, symName: _PiFileName, symBinAddr: 0x1000544F0, symSize: 0x0 }
+  - { offset: 0x11B85, size: 0x8, addend: 0x0, symName: _MergeTourFileName, symBinAddr: 0x1000544D8, symSize: 0x0 }
+  - { offset: 0x11BA1, size: 0x8, addend: 0x0, symName: _InputTourFileName, symBinAddr: 0x1000544C8, symSize: 0x0 }
+  - { offset: 0x11BB7, size: 0x8, addend: 0x0, symName: _EdgeFileName, symBinAddr: 0x1000544B0, symSize: 0x0 }
+  - { offset: 0x11BCD, size: 0x8, addend: 0x0, symName: _CandidateFileName, symBinAddr: 0x1000544A0, symSize: 0x0 }
+  - { offset: 0x11BE3, size: 0x8, addend: 0x0, symName: _CandidateFiles, symBinAddr: 0x1000544A8, symSize: 0x0 }
+  - { offset: 0x11BF9, size: 0x8, addend: 0x0, symName: _PatchingARestricted, symBinAddr: 0x1000544EC, symSize: 0x0 }
+  - { offset: 0x11C0F, size: 0x8, addend: 0x0, symName: _PatchingAExtended, symBinAddr: 0x1000544E8, symSize: 0x0 }
+  - { offset: 0x11C25, size: 0x8, addend: 0x0, symName: _CurrentCycle, symObjAddr: 0x34BB0, symBinAddr: 0x100054750, symSize: 0x0 }
+  - { offset: 0x11C3B, size: 0x8, addend: 0x0, symName: _Patchwork, symObjAddr: 0x34BB4, symBinAddr: 0x100054754, symSize: 0x0 }
+  - { offset: 0x11C51, size: 0x8, addend: 0x0, symName: _RecLevel, symObjAddr: 0x34BB8, symBinAddr: 0x100054758, symSize: 0x0 }
+  - { offset: 0x11C67, size: 0x8, addend: 0x0, symName: _DelaunayPure, symBinAddr: 0x1000544AC, symSize: 0x0 }
+  - { offset: 0x11C7D, size: 0x8, addend: 0x0, symName: _idx2, symBinAddr: 0x100054578, symSize: 0x0 }
+  - { offset: 0x11C93, size: 0x8, addend: 0x0, symName: _lnkcnt2, symBinAddr: 0x100054588, symSize: 0x0 }
+  - { offset: 0x11CA9, size: 0x8, addend: 0x0, symName: _lnkcnt1, symBinAddr: 0x100054580, symSize: 0x0 }
+  - { offset: 0x11CBF, size: 0x8, addend: 0x0, symName: _difcnt, symBinAddr: 0x100054538, symSize: 0x0 }
+  - { offset: 0x11CD5, size: 0x8, addend: 0x0, symName: _ptdebcom, symBinAddr: 0x1000545A8, symSize: 0x0 }
+  - { offset: 0x11CEB, size: 0x8, addend: 0x0, symName: _totC21, symBinAddr: 0x1000545D0, symSize: 0x0 }
+  - { offset: 0x11D01, size: 0x8, addend: 0x0, symName: _cntC2, symBinAddr: 0x100054528, symSize: 0x0 }
+  - { offset: 0x11D17, size: 0x8, addend: 0x0, symName: _totdif, symBinAddr: 0x1000545D8, symSize: 0x0 }
+  - { offset: 0x11D2D, size: 0x8, addend: 0x0, symName: _pttmp, symBinAddr: 0x1000545C0, symSize: 0x0 }
+  - { offset: 0x11D43, size: 0x8, addend: 0x0, symName: _stop, symBinAddr: 0x1000545C8, symSize: 0x0 }
+  - { offset: 0x11D59, size: 0x8, addend: 0x0, symName: _ptdebtog, symBinAddr: 0x1000545B8, symSize: 0x0 }
+  - { offset: 0x11D6F, size: 0x8, addend: 0x0, symName: _ptdebcom2, symBinAddr: 0x1000545B0, symSize: 0x0 }
+  - { offset: 0x11D85, size: 0x8, addend: 0x0, symName: _fusgrp2, symBinAddr: 0x100054560, symSize: 0x0 }
+  - { offset: 0x11D9B, size: 0x8, addend: 0x0, symName: _difnbr, symBinAddr: 0x100054540, symSize: 0x0 }
+  - { offset: 0x11DB1, size: 0x8, addend: 0x0, symName: _difnegfnd, symBinAddr: 0x100054548, symSize: 0x0 }
+  - { offset: 0x11DC7, size: 0x8, addend: 0x0, symName: _ptdeb, symBinAddr: 0x1000545A0, symSize: 0x0 }
+  - { offset: 0x11DDD, size: 0x8, addend: 0x0, symName: _diftst2, symBinAddr: 0x100054558, symSize: 0x0 }
+  - { offset: 0x11DF3, size: 0x8, addend: 0x0, symName: _diftst1, symBinAddr: 0x100054550, symSize: 0x0 }
+  - { offset: 0x11E09, size: 0x8, addend: 0x0, symName: _difact, symBinAddr: 0x100054530, symSize: 0x0 }
+  - { offset: 0x11E1F, size: 0x8, addend: 0x0, symName: _grp2N, symBinAddr: 0x100054570, symSize: 0x0 }
+  - { offset: 0x11E35, size: 0x8, addend: 0x0, symName: _grp2, symBinAddr: 0x100054568, symSize: 0x0 }
+  - { offset: 0x11E4B, size: 0x8, addend: 0x0, symName: _lnkgrp, symBinAddr: 0x100054598, symSize: 0x0 }
+  - { offset: 0x11E67, size: 0x8, addend: 0x0, symName: _lnkdif, symBinAddr: 0x100054590, symSize: 0x0 }
+  - { offset: 0x11E7D, size: 0x8, addend: 0x0, symName: _vecpttra, symBinAddr: 0x1000545E0, symSize: 0x0 }
+  - { offset: 0x11E9F, size: 0x8, addend: 0x0, symName: _compare.lto_priv.0, symObjAddr: 0x0, symBinAddr: 0x100035F60, symSize: 0x188 }
+  - { offset: 0x11EC3, size: 0x8, addend: 0x0, symName: _compare.lto_priv.0, symObjAddr: 0x0, symBinAddr: 0x100035F60, symSize: 0x188 }
+  - { offset: 0x11F62, size: 0x8, addend: 0x0, symName: _SierpinskiIndex, symObjAddr: 0x188, symBinAddr: 0x1000360E8, symSize: 0x540 }
+  - { offset: 0x11FD8, size: 0x8, addend: 0x0, symName: _MooreIndex, symObjAddr: 0x6C8, symBinAddr: 0x100036628, symSize: 0x37C }
+  - { offset: 0x1207D, size: 0x8, addend: 0x0, symName: _compare, symObjAddr: 0xA44, symBinAddr: 0x1000369A4, symSize: 0x20 }
+  - { offset: 0x120DA, size: 0x8, addend: 0x0, symName: _compareFromTo, symObjAddr: 0xA64, symBinAddr: 0x1000369C4, symSize: 0x44 }
+  - { offset: 0x12157, size: 0x8, addend: 0x0, symName: _compareCost, symObjAddr: 0xAA8, symBinAddr: 0x100036A08, symSize: 0x18 }
+  - { offset: 0x121AE, size: 0x8, addend: 0x0, symName: _CalculateSubproblems, symObjAddr: 0xAC0, symBinAddr: 0x100036A20, symSize: 0x300 }
+  - { offset: 0x1236F, size: 0x8, addend: 0x0, symName: _WindowSize, symObjAddr: 0xDC0, symBinAddr: 0x100036D20, symSize: 0x290 }
+  - { offset: 0x12789, size: 0x8, addend: 0x0, symName: _MakeSubproblem, symObjAddr: 0x1050, symBinAddr: 0x100036FB0, symSize: 0x2B8 }
+  - { offset: 0x12880, size: 0x8, addend: 0x0, symName: _RecordBestTour, symObjAddr: 0x1308, symBinAddr: 0x100037268, symSize: 0x58 }
+  - { offset: 0x128AB, size: 0x8, addend: 0x0, symName: _RecordBetterTour, symObjAddr: 0x1360, symBinAddr: 0x1000372C0, symSize: 0x140 }
+  - { offset: 0x12938, size: 0x8, addend: 0x0, symName: _RemoveFirstActive, symObjAddr: 0x14A0, symBinAddr: 0x100037400, symSize: 0x44 }
+  - { offset: 0x12965, size: 0x8, addend: 0x0, symName: _SegmentSize, symObjAddr: 0x14E4, symBinAddr: 0x100037444, symSize: 0x17C }
+  - { offset: 0x12A81, size: 0x8, addend: 0x0, symName: _Between_SL.part.0.isra.0, symObjAddr: 0x1660, symBinAddr: 0x1000375C0, symSize: 0x120 }
+  - { offset: 0x12AAE, size: 0x8, addend: 0x0, symName: _FindPermutation, symObjAddr: 0x1780, symBinAddr: 0x1000376E0, symSize: 0x164 }
+  - { offset: 0x12AFD, size: 0x8, addend: 0x0, symName: _FeasibleKOptMove, symObjAddr: 0x18E4, symBinAddr: 0x100037844, symSize: 0x8C }
+  - { offset: 0x12B4C, size: 0x8, addend: 0x0, symName: _Cycles, symObjAddr: 0x1970, symBinAddr: 0x1000378D0, symSize: 0xF4 }
+  - { offset: 0x12BAB, size: 0x8, addend: 0x0, symName: _Added, symObjAddr: 0x1A64, symBinAddr: 0x1000379C4, symSize: 0x24 }
+  - { offset: 0x12BEE, size: 0x8, addend: 0x0, symName: _Deleted, symObjAddr: 0x1A88, symBinAddr: 0x1000379E8, symSize: 0x24 }
+  - { offset: 0x12C27, size: 0x8, addend: 0x0, symName: _MarkAdded, symObjAddr: 0x1AAC, symBinAddr: 0x100037A0C, symSize: 0x54 }
+  - { offset: 0x12C5E, size: 0x8, addend: 0x0, symName: _MarkDeleted, symObjAddr: 0x1B00, symBinAddr: 0x100037A60, symSize: 0x48 }
+  - { offset: 0x12C95, size: 0x8, addend: 0x0, symName: _UnmarkAdded, symObjAddr: 0x1B48, symBinAddr: 0x100037AA8, symSize: 0x5C }
+  - { offset: 0x12CCC, size: 0x8, addend: 0x0, symName: _UnmarkDeleted, symObjAddr: 0x1BA4, symBinAddr: 0x100037B04, symSize: 0x5C }
+  - { offset: 0x12D03, size: 0x8, addend: 0x0, symName: _InitializeStatistics, symObjAddr: 0x1C00, symBinAddr: 0x100037B60, symSize: 0x70 }
+  - { offset: 0x12D1D, size: 0x8, addend: 0x0, symName: _UpdateStatistics, symObjAddr: 0x1C70, symBinAddr: 0x100037BD0, symSize: 0xF4 }
+  - { offset: 0x12D5E, size: 0x8, addend: 0x0, symName: _TrimCandidateSet, symObjAddr: 0x1D64, symBinAddr: 0x100037CC4, symSize: 0xCC }
+  - { offset: 0x12DED, size: 0x8, addend: 0x0, symName: _ResetCandidateSet, symObjAddr: 0x1E30, symBinAddr: 0x100037D90, symSize: 0x154 }
+  - { offset: 0x12E48, size: 0x8, addend: 0x0, symName: _SymmetrizeCandidateSet, symObjAddr: 0x1F84, symBinAddr: 0x100037EE4, symSize: 0x164 }
+  - { offset: 0x12EC5, size: 0x8, addend: 0x0, symName: _AddCandidate.constprop.1, symObjAddr: 0x20E8, symBinAddr: 0x100038048, symSize: 0x138 }
+  - { offset: 0x12EF8, size: 0x8, addend: 0x0, symName: _AddCandidate.constprop.2.isra.0, symObjAddr: 0x2220, symBinAddr: 0x100038180, symSize: 0x120 }
+  - { offset: 0x12F2B, size: 0x8, addend: 0x0, symName: _AddCandidate.constprop.0.isra.0, symObjAddr: 0x2340, symBinAddr: 0x1000382A0, symSize: 0x10C }
+  - { offset: 0x12F5E, size: 0x8, addend: 0x0, symName: _RestoreTour, symObjAddr: 0x244C, symBinAddr: 0x1000383AC, symSize: 0xB4 }
+  - { offset: 0x12FBB, size: 0x8, addend: 0x0, symName: _SFCTour, symObjAddr: 0x2500, symBinAddr: 0x100038460, symSize: 0x4E0 }
+  - { offset: 0x1307A, size: 0x8, addend: 0x0, symName: _SFCTour, symObjAddr: 0x2500, symBinAddr: 0x100038460, symSize: 0x4E0 }
+  - { offset: 0x1313A, size: 0x8, addend: 0x0, symName: _PrintStatistics, symObjAddr: 0x29E0, symBinAddr: 0x100038940, symSize: 0x260 }
+  - { offset: 0x131B1, size: 0x8, addend: 0x0, symName: _WriteCandidates, symObjAddr: 0x2C40, symBinAddr: 0x100038BA0, symSize: 0x208 }
+  - { offset: 0x13403, size: 0x8, addend: 0x0, symName: _WritePenalties, symObjAddr: 0x2E48, symBinAddr: 0x100038DA8, symSize: 0x158 }
+  - { offset: 0x13443, size: 0x8, addend: 0x0, symName: _WriteTour.part.0, symObjAddr: 0x2FA0, symBinAddr: 0x100038F00, symSize: 0x3C8 }
+  - { offset: 0x134BF, size: 0x8, addend: 0x0, symName: _WriteTour, symObjAddr: 0x3368, symBinAddr: 0x1000392C8, symSize: 0x18 }
+  - { offset: 0x13565, size: 0x8, addend: 0x0, symName: _KMeansClustering, symObjAddr: 0x3380, symBinAddr: 0x1000392E0, symSize: 0x1040 }
+  - { offset: 0x1384E, size: 0x8, addend: 0x0, symName: _SolveSubproblem, symObjAddr: 0x43C0, symBinAddr: 0x10003A320, symSize: 0x1840 }
+  - { offset: 0x13D38, size: 0x8, addend: 0x0, symName: _SolveCompressedSubproblem, symObjAddr: 0x5C00, symBinAddr: 0x10003BB60, symSize: 0x100 }
+  - { offset: 0x13DD3, size: 0x8, addend: 0x0, symName: _KarpPartition, symObjAddr: 0x5D00, symBinAddr: 0x10003BC60, symSize: 0x1E0 }
+  - { offset: 0x13E7D, size: 0x8, addend: 0x0, symName: _SolveSubproblemBorderProblems, symObjAddr: 0x5EE0, symBinAddr: 0x10003BE40, symSize: 0xC24 }
+  - { offset: 0x13F00, size: 0x8, addend: 0x0, symName: _SolveSubproblemBorderProblems, symObjAddr: 0x5EE0, symBinAddr: 0x10003BE40, symSize: 0xC24 }
+  - { offset: 0x1409C, size: 0x8, addend: 0x0, symName: _SolveDelaunaySubproblems, symObjAddr: 0x6B04, symBinAddr: 0x10003CA64, symSize: 0xC5C }
+  - { offset: 0x1410F, size: 0x8, addend: 0x0, symName: _SolveDelaunaySubproblems, symObjAddr: 0x6B04, symBinAddr: 0x10003CA64, symSize: 0xC5C }
+  - { offset: 0x1426A, size: 0x8, addend: 0x0, symName: _SolveKarpSubproblems, symObjAddr: 0x7760, symBinAddr: 0x10003D6C0, symSize: 0x580 }
+  - { offset: 0x1429D, size: 0x8, addend: 0x0, symName: _SolveKarpSubproblems, symObjAddr: 0x7760, symBinAddr: 0x10003D6C0, symSize: 0x580 }
+  - { offset: 0x143A1, size: 0x8, addend: 0x0, symName: _SolveKCenterSubproblems, symObjAddr: 0x7CE0, symBinAddr: 0x10003DC40, symSize: 0x564 }
+  - { offset: 0x14414, size: 0x8, addend: 0x0, symName: _SolveKCenterSubproblems, symObjAddr: 0x7CE0, symBinAddr: 0x10003DC40, symSize: 0x564 }
+  - { offset: 0x144E8, size: 0x8, addend: 0x0, symName: _SolveKMeansSubproblems, symObjAddr: 0x8244, symBinAddr: 0x10003E1A4, symSize: 0x39C }
+  - { offset: 0x1455B, size: 0x8, addend: 0x0, symName: _SolveKMeansSubproblems, symObjAddr: 0x8244, symBinAddr: 0x10003E1A4, symSize: 0x39C }
+  - { offset: 0x145DE, size: 0x8, addend: 0x0, symName: _SolveRoheSubproblems, symObjAddr: 0x85E0, symBinAddr: 0x10003E540, symSize: 0xCD0 }
+  - { offset: 0x14731, size: 0x8, addend: 0x0, symName: _SolveRoheSubproblems, symObjAddr: 0x85E0, symBinAddr: 0x10003E540, symSize: 0xCD0 }
+  - { offset: 0x14920, size: 0x8, addend: 0x0, symName: _SolveSFCSubproblems, symObjAddr: 0x92B0, symBinAddr: 0x10003F210, symSize: 0x660 }
+  - { offset: 0x149D3, size: 0x8, addend: 0x0, symName: _SolveSFCSubproblems, symObjAddr: 0x92B0, symBinAddr: 0x10003F210, symSize: 0x660 }
+  - { offset: 0x14A72, size: 0x8, addend: 0x0, symName: _SolveTourSegmentSubproblems, symObjAddr: 0x9910, symBinAddr: 0x10003F870, symSize: 0x618 }
+  - { offset: 0x14B15, size: 0x8, addend: 0x0, symName: _SolveTourSegmentSubproblems, symObjAddr: 0x9910, symBinAddr: 0x10003F870, symSize: 0x618 }
+  - { offset: 0x14BB4, size: 0x8, addend: 0x0, symName: _StoreTour, symObjAddr: 0x9F28, symBinAddr: 0x10003FE88, symSize: 0x158 }
+  - { offset: 0x14C0C, size: 0x8, addend: 0x0, symName: _BestKOptMoveRec.constprop.2, symObjAddr: 0xA080, symBinAddr: 0x10003FFE0, symSize: 0x31A0 }
+  - { offset: 0x15516, size: 0x8, addend: 0x0, symName: _Minimum1TreeCost.constprop.0, symObjAddr: 0xD220, symBinAddr: 0x100043180, symSize: 0x274 }
+  - { offset: 0x1554D, size: 0x8, addend: 0x0, symName: _n_partitions_size2, symBinAddr: 0x10005461C, symSize: 0x0 }
+  - { offset: 0x15563, size: 0x8, addend: 0x0, symName: _n_partitions_before_fusion, symBinAddr: 0x100054618, symSize: 0x0 }
+  - { offset: 0x15579, size: 0x8, addend: 0x0, symName: _n_partitions_after_fusion1, symBinAddr: 0x100054600, symSize: 0x0 }
+  - { offset: 0x1558F, size: 0x8, addend: 0x0, symName: _n_partitions_after_fusion2, symBinAddr: 0x100054604, symSize: 0x0 }
+  - { offset: 0x155A5, size: 0x8, addend: 0x0, symName: _n_partitions_after_fusion3, symBinAddr: 0x100054608, symSize: 0x0 }
+  - { offset: 0x155BB, size: 0x8, addend: 0x0, symName: _n_partitions_after_fusion4, symBinAddr: 0x10005460C, symSize: 0x0 }
+  - { offset: 0x155D1, size: 0x8, addend: 0x0, symName: _n_partitions_after_fusion5, symBinAddr: 0x100054610, symSize: 0x0 }
+  - { offset: 0x155E7, size: 0x8, addend: 0x0, symName: _n_partitions_after_fusionB, symBinAddr: 0x100054614, symSize: 0x0 }
+  - { offset: 0x155FE, size: 0x8, addend: 0x0, symName: _white, symObjAddr: 0xDAF0, symBinAddr: 0x100048348, symSize: 0x0 }
+  - { offset: 0x15621, size: 0x8, addend: 0x0, symName: _grey, symObjAddr: 0xDAF4, symBinAddr: 0x10004834C, symSize: 0x0 }
+  - { offset: 0x15638, size: 0x8, addend: 0x0, symName: _black, symObjAddr: 0xDAF8, symBinAddr: 0x100048350, symSize: 0x0 }
+  - { offset: 0x1564E, size: 0x8, addend: 0x0, symName: _TourFile, symBinAddr: 0x1000545F8, symSize: 0x0 }
+  - { offset: 0x15664, size: 0x8, addend: 0x0, symName: _BacktrackMove, symBinAddr: 0x1000545E8, symSize: 0x0 }
+  - { offset: 0x1569E, size: 0x8, addend: 0x0, symName: _PenaltyFitness, symBinAddr: 0x1000545F0, symSize: 0x0 }
+  - { offset: 0x156B4, size: 0x8, addend: 0x0, symName: _CostMax, symObjAddr: 0x31AF0, symBinAddr: 0x100054760, symSize: 0x0 }
+  - { offset: 0x156CA, size: 0x8, addend: 0x0, symName: _CostMin, symObjAddr: 0x31AF8, symBinAddr: 0x100054768, symSize: 0x0 }
+  - { offset: 0x156E0, size: 0x8, addend: 0x0, symName: _TimeMax, symObjAddr: 0x31B00, symBinAddr: 0x100054770, symSize: 0x0 }
+  - { offset: 0x156F6, size: 0x8, addend: 0x0, symName: _TimeMin, symObjAddr: 0x31B08, symBinAddr: 0x100054778, symSize: 0x0 }
+  - { offset: 0x1570C, size: 0x8, addend: 0x0, symName: _TrialsMax, symObjAddr: 0x31B10, symBinAddr: 0x100054780, symSize: 0x0 }
+  - { offset: 0x15722, size: 0x8, addend: 0x0, symName: _TrialsMin, symObjAddr: 0x31B14, symBinAddr: 0x100054784, symSize: 0x0 }
+  - { offset: 0x15738, size: 0x8, addend: 0x0, symName: _TimeSum, symObjAddr: 0x31B18, symBinAddr: 0x100054788, symSize: 0x0 }
+  - { offset: 0x1574E, size: 0x8, addend: 0x0, symName: _CostSum, symObjAddr: 0x31B20, symBinAddr: 0x100054790, symSize: 0x0 }
+  - { offset: 0x15764, size: 0x8, addend: 0x0, symName: _TrialSum, symObjAddr: 0x31B28, symBinAddr: 0x100054798, symSize: 0x0 }
+  - { offset: 0x1577A, size: 0x8, addend: 0x0, symName: _Successes, symObjAddr: 0x31B2C, symBinAddr: 0x10005479C, symSize: 0x0 }
+  - { offset: 0x15790, size: 0x8, addend: 0x0, symName: _Updates, symObjAddr: 0x31B30, symBinAddr: 0x1000547A0, symSize: 0x0 }
+  - { offset: 0x157A6, size: 0x8, addend: 0x0, symName: _Size, symObjAddr: 0x31B34, symBinAddr: 0x1000547A4, symSize: 0x0 }
+  - { offset: 0x157BC, size: 0x8, addend: 0x0, symName: _KDTree.lto_priv.3, symObjAddr: 0x31B38, symBinAddr: 0x1000547A8, symSize: 0x0 }
+  - { offset: 0x157D2, size: 0x8, addend: 0x0, symName: _OldGlobalBestCost, symObjAddr: 0x31B40, symBinAddr: 0x1000547B0, symSize: 0x0 }
+  - { offset: 0x157E8, size: 0x8, addend: 0x0, symName: _CurrentSubproblem, symObjAddr: 0x31B48, symBinAddr: 0x1000547B8, symSize: 0x0 }
+  - { offset: 0x157FE, size: 0x8, addend: 0x0, symName: _Subproblems, symObjAddr: 0x31B4C, symBinAddr: 0x1000547BC, symSize: 0x0 }
+  - { offset: 0x15814, size: 0x8, addend: 0x0, symName: _KDTree.lto_priv.2, symObjAddr: 0x31B50, symBinAddr: 0x1000547C0, symSize: 0x0 }
+  - { offset: 0x1582A, size: 0x8, addend: 0x0, symName: _GlobalBestCost, symObjAddr: 0x31B58, symBinAddr: 0x1000547C8, symSize: 0x0 }
+...

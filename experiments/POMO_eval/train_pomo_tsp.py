@@ -8,6 +8,8 @@ from rl4co.utils import RL4COTrainer, instantiate_loggers, log_hyperparameters
 from hydra import compose, initialize
 from omegaconf import OmegaConf
 
+from utils.gmm_tsp import GMMSampler
+
 # Hydra configs
 ROOT_DIR = "./"
 with initialize(version_base=None, config_path=ROOT_DIR + "configs/"):
@@ -21,8 +23,14 @@ if cfg.get("seed") is not None:
 
 print(OmegaConf.to_yaml(cfg))
 
-# RL4CO env based on TorchRL
-env = TSPEnv(generator_params=dict(cfg.env.generator_params))
+# RL4CO env based on TorchRL — GMM-sampled locations instead of uniform.
+# ``OmegaConf.to_container`` returns a plain Python dict — `dict(cfg...)`
+# preserves OmegaConf's struct flag and rejects unknown keys.
+gen_params = OmegaConf.to_container(cfg.env.generator_params, resolve=True)
+gen_params["loc_sampler"] = GMMSampler(
+    num_modes=5, std=0.1, seed=cfg.get("seed") or 0
+)
+env = TSPEnv(generator_params=gen_params)
 
 # RL Model: REINFORCE and greedy rollout baseline
 model = POMO(

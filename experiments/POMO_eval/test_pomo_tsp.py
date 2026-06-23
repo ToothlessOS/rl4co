@@ -12,6 +12,7 @@ from rl4co.envs import TSPEnv
 from rl4co.models import POMO
 
 from utils.HK import held_karp_one_tree_lower_bound, tour_edges, edge_overlap
+from utils.gmm_tsp import GMMSampler
 
 # Hydra configs (CLI overrides supported, e.g.
 # python test_pomo_tsp.py seed=99 ckpt_path=/abs/path/last.ckpt)
@@ -56,7 +57,16 @@ ckpt_path = resolve_ckpt_path()
 print(f"Using checkpoint: {ckpt_path}")
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
-env = TSPEnv(generator_params=dict(cfg.env.generator_params))
+
+# GMM distribution for TSP instance generation — keeps the train-time
+# mode count and centers so test instances match the training distribution.
+# ``OmegaConf.to_container`` returns a plain Python dict — `dict(cfg...)`
+# preserves OmegaConf's struct flag and rejects unknown keys.
+gen_params = OmegaConf.to_container(cfg.env.generator_params, resolve=True)
+gen_params["loc_sampler"] = GMMSampler(
+    num_modes=5, std=0.1, seed=cfg.get("seed") or 0
+)
+env = TSPEnv(generator_params=gen_params)
 model = POMO.load_from_checkpoint(ckpt_path, env=env, weights_only=False).to(device)
 
 # Run inference on test data (n=64)
