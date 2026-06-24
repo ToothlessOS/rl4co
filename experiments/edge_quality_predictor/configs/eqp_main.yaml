@@ -1,0 +1,59 @@
+# @package _global_
+
+# order of defaults determines precedence; later entries override earlier ones
+defaults:
+  - _self_
+  - callbacks: default.yaml
+  - hydra: default.yaml
+  - logger: wandb
+  - trainer: default.yaml
+  - paths: default.yaml
+  - extras: default.yaml
+
+# task name, determines output directory path
+mode: "train"
+
+# tags to help you identify your experiments
+tags: ["eqp", "tsp"]
+
+# set False to skip model training
+train: True
+
+# evaluate on test set after training
+test: True
+
+# provide a checkpoint path to resume training (null = start from scratch)
+ckpt_path: null
+
+# https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html
+matmul_precision: "medium"
+
+# ----- experiment-specific config -----
+
+data:
+  train_path: ${paths.data_dir}/TSP/training dataset/train_TSP100_n100w-002.txt
+  val_path: ${paths.data_dir}/TSP/testing dataset/test_TSP100_n1w.txt
+  test_paths:
+    - ${paths.data_dir}/TSP/testing dataset/test_TSP100_n1w.txt
+  train_limit: 100000
+  val_limit: 1000
+  test_limit: 128
+  pad_to_n: 100
+  strategy_weights: [0.20, 0.15, 0.40, 0.15, 0.10]
+  kopt_n_moves: 5
+  kopt_p_3opt: 0.3
+  num_workers: 4
+  batch_size: 32
+
+model:
+  hidden_dim: 128
+  n_gcn_layers: 30
+  n_mlp_layers: 3
+  n_edges_per_node: 2
+  pos_weight: 9.0
+
+optim:
+  lr: 1e-4
+  weight_decay: 0.0
+
+seed: 42

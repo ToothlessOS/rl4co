@@ -1,0 +1,32 @@
+# @package _global_
+
+# https://wandb.ai
+logger:
+  wandb:
+    _target_: lightning.pytorch.loggers.wandb.WandbLogger
+
+    # Run name encodes model + problem + size. Overridable from CLI.
+    name: "eqp-tsp-n${data.pad_to_n}"
+
+    tags:
+      - "model:eqp"
+      - "problem:tsp"
+      - "size:${data.pad_to_n}"
+
+    job_type: "train"
+
+    save_dir: "${paths.output_dir}"
+    offline: False
+    id: null
+    anonymous: null
+    project: "rl4co-eqp-tsp"
+    log_model: False
+    prefix: ""
+    group: ""
+
+hydra:
+  run:
+    dir: ${paths.log_dir}/${mode}/runs/${logger.wandb.group}/${logger.wandb.name}/${now:%Y-%m-%d}_${now:%H-%M-%S}
+  sweep:
+    dir: ${paths.log_dir}/${mode}/multiruns/${logger.wandb.group}/${logger.wandb.name}/${now:%Y-%m-%d}_${now:%H-%M-%S}
+    subdir: ${hydra.job.num}

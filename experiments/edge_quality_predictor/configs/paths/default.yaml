@@ -1,0 +1,16 @@
+# path to root directory
+# uses PROJECT_ROOT env var if set, otherwise falls back to the current working directory
+root_dir: ${oc.env:PROJECT_ROOT,.}
+
+# path to data directory
+data_dir: ${paths.root_dir}/data
+
+# path to logging directory
+log_dir: ${paths.root_dir}/logs
+
+# path to output directory, used by checkpoints / trainer default_root_dir.
+# Kept as a plain path so this config works with `hydra.compose()` (no Hydra runtime).
+output_dir: ${paths.root_dir}/outputs
+
+# path to working directory
+work_dir: ${paths.root_dir}
