@@ -131,6 +131,54 @@ the legacy LKH-3 headers).
   LKH pick edges within each node's top-20, so they receive similar
   per-node softmax mass. The visualization highlights the model's
   per-edge picks; the global mean is not informative.
+* **Stage-3 input is not restricted to kNN graphs.** The SGN's shape
+  contract is `n_edges = 20` per node — the per-node softmax in
+  `sgcn_model.py` and the embedding reshape both treat 20 as a hard
+  dimension, and the pretrained weights cannot distinguish slot 5 from
+  slot 25 if we fed 25 slots. However, the *content* of those 20 slots
+  is unconstrained. Stage 3 feeds the model a **tour-augmented**
+  20-graph: for each node `i`, the 2 tour edges incident to `i` are
+  forced into the candidate set, displacing the 2 farthest 20-NN slots
+  when the union exceeds 20. The inverse edge index is recomputed in
+  Python (see `utils/neurolkh_runner.build_tour_augmented_features`).
+  Caveats:
+  - The pretrained model has never seen a tour-augmented graph during
+    training, so absolute scores shift relative to the pure-kNN case.
+    The interpretation is preserved: the per-node softmax is still
+    over 20 candidates.
+  - Long tour edges tend to receive *low* per-node softmax mass in
+    the augmented graph (they compete with close kNN candidates that
+    they pushed out of). Read the col-3 augmented panel as "given
+    these 20 candidates for the node, which does the model prefer",
+    not "this edge is in the optimal tour".
+
+---
+
+## Stage 3 — tour-augmented NeuroLKH input
+
+Stage 2 scores the heuristic tour against the pure 20-NN graph. Stage
+3 modifies the input to NeuroLKH: each node's 20-slot candidate set is
+rebuilt as `{2 tour edges} ∪ {closest 18 remaining 20-NN slots}`, with
+the inverse edge index recomputed in Python. After forward-pass
+scoring, more tour edges receive a real score, and the figure's
+col-3 panel (NeuroLKH on the augmented graph, filtered to top-K)
+shows the difference directly.
+
+**Figure layout**: 2 rows × 3 columns (rows = FI / LKH-2; columns =
+α-colored, NeuroLKH-on-20-NN top-K, NeuroLKH-on-augmented top-K). Pass
+`--no-augment` to fall back to the stage-2 2×2 layout.
+
+**Headline metric**: *coverage lift* = `(# tour edges in top-K on
+augmented) − (# tour edges in top-K on 20-NN)`. For TSP-100 on
+random-uniform instances the lift is typically +5 to +15 edges per
+tour (depends on how aggressively FI / LKH picks non-kNN edges).
+
+**Implementation**: see
+`utils/neurolkh_runner.build_tour_augmented_features` for the per-node
+rebuild algorithm and `_recompute_inverse_edge_index` for the inverse
+index. The high-level orchestration lives in
+`scripts/run_alpha_nearness.py:_plot_instance` (now switches between
+2x2 and 2x3 depending on whether `augmented_scores` is passed).
 
 ---
 
@@ -158,9 +206,9 @@ experiments/decompose-on-edges/
 │   ├── lkh_runner.py            vendored LKH-2 wrapper (~250 LOC)
 │   ├── alpha_nearness.py        MST + binary lifting (~270 LOC)
 │   ├── farthest_insertion.py    FI heuristic (~110 LOC)
-│   └── neurolkh_runner.py       NeuroLKH wrapper: FeatGenerate + SGN (~330 LOC)
+│   └── neurolkh_runner.py       NeuroLKH wrapper: FeatGenerate + SGN + augmented 20-graph (~560 LOC)
 ├── scripts/
-│   └── run_alpha_nearness.py    argparse entry point (~430 LOC, 2x2 figure)
+│   └── run_alpha_nearness.py    argparse entry point (~700 LOC, 2x3 figure with --no-augment for 2x2)
 └── figures/                     output PNGs (created at runtime)
 ```
 

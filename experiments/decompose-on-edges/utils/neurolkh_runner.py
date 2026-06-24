@@ -401,3 +401,323 @@ def compute_topk_mask(score_matrix: np.ndarray, k: int = 5) -> np.ndarray:
         directed[i, finite_idx[top_local]] = True
 
     return directed | directed.T
+
+
+# ---------------------------------------------------------------------------
+# Tour-augmented sparse graph (stage 3)
+# ---------------------------------------------------------------------------
+#
+# The pretrained ``SparseGCNModel`` is shape-locked to ``n_edges = 20`` per
+# node — the per-node softmax in ``sgcn_model.py`` and the embedding
+# reshape both treat 20 as a hard dimension, and the pretrained weights
+# have no way to distinguish slot 5 from slot 25 if we fed 25 slots.
+# However, the model imposes no constraint on the *content* of those 20
+# slots: any 20-per-node sparse graph of the right shape runs forward and
+# yields a score matrix.
+#
+# Stage 3 exploits this. For each node ``i`` we rebuild a 20-set that
+# **guarantees** the two edges incident to the heuristic tour are in the
+# candidate list, displacing the two farthest of the 20 nearest neighbors
+# when needed. The inverse edge index is recomputed in Python (the LKH
+# ``FeatGenerate`` shortcut does not apply because we are mutating the
+# per-node candidate sets). All conventions match
+# ``NeuroLKH/SRC/FeatureGenerate.c:35-50``.
+
+
+def _build_tour_edge_set(tour_perm: list[int], n: int) -> list[set[int]]:
+    """Return per-node sets of tour neighbors.
+
+    For each node ``i``, returns the set of nodes ``j`` such that the
+    closed tour visits ``i`` and ``j`` consecutively (either order). In
+    a valid undirected TSP tour each node has exactly 2 tour neighbors,
+    so the returned set has size 2 (or 1 when ``n == 2``). ``n == 1``
+    yields one empty set.
+
+    Args:
+        tour_perm: Closed-cycle permutation (the cycle closes implicitly
+            via ``tour_perm[-1] -> tour_perm[0]``).
+        n: Number of nodes.
+
+    Returns:
+        ``list[set[int]]`` of length ``n``.
+    """
+    if len(tour_perm) != n:
+        raise ValueError(
+            f"tour_perm length {len(tour_perm)} != n {n}"
+        )
+    if n == 1:
+        return [set()]
+    if n == 2:
+        # Only edge is (0, 1) and its reverse; both endpoints see the other.
+        return [{1}, {0}]
+
+    sets: list[set[int]] = [set() for _ in range(n)]
+    cycle = np.asarray(tour_perm, dtype=np.int64)
+    next_idx = np.roll(cycle, -1)
+    for a, b in zip(cycle.tolist(), next_idx.tolist()):
+        sets[int(a)].add(int(b))
+        sets[int(b)].add(int(a))
+    return sets
+
+
+def _recompute_inverse_edge_index(ei_2d: np.ndarray, n: int) -> np.ndarray:
+    """Recompute the flat inverse edge index for an arbitrary 20-per-node graph.
+
+    Python equivalent of ``NeuroLKH/SRC/FeatureGenerate.c:35-50``: for
+    each directed edge ``(i, j)`` at flat position ``i * 20 + slot``,
+    find the slot of the reverse edge ``(j, i)`` in ``j``'s candidate
+    set. If ``j`` does not name ``i`` in its own set (asymmetric kNN),
+    the inverse is ``-1``.
+
+    Args:
+        ei_2d: ``(n, 20)`` int array, 0-indexed. May contain ``-1``
+            sentinels (treated as "no edge here"); such entries get
+            ``-1`` inverse.
+        n: Number of nodes.
+
+    Returns:
+        ``(n * 20,)`` flat int64 array. ``out[i * 20 + slot]`` is the
+        flat position ``j * 20 + rev_slot`` where ``j = ei_2d[i, slot]``
+        and ``rev_slot`` is the position of ``i`` in ``ei_2d[j]``;
+        ``-1`` if either endpoint has no valid edge to the other.
+    """
+    # Pre-build per-node {neighbor: slot} dict for O(1) reverse lookup.
+    slots_of: list[dict[int, int]] = [
+        {int(neigh): slot for slot, neigh in enumerate(ei_2d[i])}
+        for i in range(n)
+    ]
+    inv = np.full(n * _N_EDGES, -1, dtype=np.int64)
+    for i in range(n):
+        for slot in range(_N_EDGES):
+            j = int(ei_2d[i, slot])
+            if j < 0:
+                continue
+            rev = slots_of[j].get(i, -1)
+            if rev >= 0:
+                inv[i * _N_EDGES + slot] = j * _N_EDGES + rev
+    return inv
+
+
+def _pairwise_euclidean(coords: np.ndarray) -> np.ndarray:
+    """``(n, n)`` Euclidean distance matrix; ``D[i, i] = 0``."""
+    diff = coords[:, None, :] - coords[None, :, :]
+    return np.sqrt((diff * diff).sum(axis=-1))
+
+
+def build_tour_augmented_features(
+    coords: np.ndarray,
+    *,
+    base_edge_index: np.ndarray,
+    base_edge_feat: np.ndarray,
+    base_inverse_edge_index: np.ndarray,
+    tour_perm: list[int],
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Rebuild a 20-per-node candidate set with the tour edges forced in.
+
+    For each node ``i``, the new 20-set is::
+
+        tour_set[i] ∪ (knn_set[i] \\ tour_set[i])
+
+    where ``tour_set[i]`` has the two tour neighbors of ``i`` and
+    ``knn_set[i]`` is the 20 nearest neighbors from the base 20-NN
+    graph. If the union exceeds 20 (rare on TSP-100 but possible on
+    small dense instances), the farthest kNN members are dropped first.
+    If the union is below 20 (also rare: happens when many kNN slots
+    coincide with tour slots), the leftover kNN slots are appended.
+
+    Slot ordering within each node is deterministic:
+
+    1. Tour edges not already in the kNN (sorted ascending by neighbor
+       id), then
+    2. Tour edges that already matched a kNN slot (sorted ascending by
+       neighbor id), then
+    3. The closest remaining kNN slots (ascending by kNN distance),
+       padding to 20 with the longest dropped kNN when needed.
+
+    The inverse edge index is recomputed in Python (see
+    :func:`_recompute_inverse_edge_index`); ``base_inverse_edge_index``
+    is accepted for API symmetry but ignored.
+
+    Args:
+        coords: ``(n, 2)`` Euclidean coordinates.
+        base_edge_index: ``(1, n, 20)`` int array, 0-indexed, from
+            :func:`generate_20nn_features`.
+        base_edge_feat: ``(1, n, 20)`` float32 array (raw Euclidean
+            distances, NOT the 1e6-scaled LKH values).
+        base_inverse_edge_index: ``(1, n, 20)`` int array; unused
+            (kept for symmetry with :func:`predict_edge_scores`).
+        tour_perm: Closed-cycle permutation (length ``n``).
+
+    Returns:
+        ``(edge_index, edge_feat, inverse_edge_index)`` with shapes
+        ``(1, n, 20)``, 0-indexed. ``edge_feat`` is recomputed from
+        raw Euclidean distances (NOT reused from ``base_edge_feat``)
+        so the units are consistent with the model's expectation.
+    """
+    coords = np.asarray(coords, dtype=np.float64)
+    if coords.ndim != 2 or coords.shape[1] != 2:
+        raise ValueError(f"coords must be (n, 2); got {coords.shape}")
+    n = coords.shape[0]
+
+    expected_flat = n * _N_EDGES
+    if base_edge_index.size != expected_flat:
+        raise ValueError(
+            f"base_edge_index has {base_edge_index.size} entries but "
+            f"n={n} requires n*20 = {expected_flat}"
+        )
+    if base_edge_index.shape[-1] != _N_EDGES:
+        raise ValueError(
+            f"base_edge_index last dim must be {_N_EDGES}; "
+            f"got {base_edge_index.shape}"
+        )
+
+    # Unwrap to (n, 20) for the per-node rebuild.
+    ei_2d = base_edge_index.reshape(n, _N_EDGES)
+    ef_2d = base_edge_feat.reshape(n, _N_EDGES)
+
+    D = _pairwise_euclidean(coords)
+    tour_sets = _build_tour_edge_set(tour_perm, n)
+
+    new_ei = np.full((n, _N_EDGES), -1, dtype=np.int64)
+    new_ef = np.full((n, _N_EDGES), np.inf, dtype=np.float32)
+
+    for i in range(n):
+        tour_set = tour_sets[i]
+
+        # Partition the 20 kNN slots into "already in tour" and "not in tour".
+        # Self-loops are dropped first: LKH FeatGenerate occasionally includes
+        # the node itself in its 20-NN at a small non-zero distance (the
+        # upstream TSPLIB writer truncates scaled coordinates to 10 chars,
+        # so the "self distance" can round to e.g. 0.001 instead of 0.0).
+        in_tour_knn: list[tuple[int, float]] = []
+        out_tour_knn: list[tuple[int, float]] = []
+        for slot in range(_N_EDGES):
+            j = int(ei_2d[i, slot])
+            if j < 0 or j == i:
+                continue
+            d = float(ef_2d[i, slot])
+            if j in tour_set:
+                in_tour_knn.append((j, d))
+            else:
+                out_tour_knn.append((j, d))
+
+        # Step 1+2: tour slots that did NOT come from kNN (insert first),
+        # then tour slots that did come from kNN. Sort each by neighbor
+        # id for determinism.
+        in_tour_set = {j for j, _ in in_tour_knn}
+        missing_tour = sorted(tour_set - in_tour_set)
+        in_tour_existing = sorted(j for j, _ in in_tour_knn)
+        new_neighbors: list[int] = list(missing_tour) + list(in_tour_existing)
+        used: set[int] = set(new_neighbors)
+
+        # Step 3: fill remaining slots with closest kNN not in tour.
+        out_tour_knn.sort(key=lambda t: t[1])
+        remaining = _N_EDGES - len(new_neighbors)
+        for j, _ in out_tour_knn:
+            if remaining <= 0:
+                break
+            if j not in used:
+                new_neighbors.append(j)
+                used.add(j)
+                remaining -= 1
+
+        # Step 4 (rare): pad with the closest unused nodes from the full
+        # distance matrix. This happens when the kNN slots were heavily
+        # dominated by self-loops + tour edges (so we ran out of fresh
+        # candidates). Self-loops are skipped.
+        if remaining > 0:
+            row = D[i].copy()
+            row[i] = np.inf  # skip self
+            for j in np.argsort(row):
+                j = int(j)
+                if j in used:
+                    continue
+                new_neighbors.append(j)
+                used.add(j)
+                remaining -= 1
+                if remaining <= 0:
+                    break
+
+        # Defensive: drop the farthest kNN if the union exceeded 20.
+        if len(new_neighbors) > _N_EDGES:
+            # Re-sort kNN contributions by distance descending; drop
+            # the longest first. Tour slots are protected.
+            tour_positions = len(missing_tour) + len(in_tour_existing)
+            tail_with_dist = [
+                (j, float(D[i, j])) for j in new_neighbors[tour_positions:]
+            ]
+            tail_with_dist.sort(key=lambda t: -t[1])
+            kept_tail = tail_with_dist[: _N_EDGES - tour_positions]
+            new_neighbors = (
+                new_neighbors[:tour_positions]
+                + [j for j, _ in kept_tail]
+            )
+
+        # Final assertion: 20 slots, no self-loops, no -1.
+        if len(new_neighbors) != _N_EDGES:
+            raise RuntimeError(
+                f"node {i}: augmented candidate set has {len(new_neighbors)} "
+                f"slots (expected {_N_EDGES})"
+            )
+        if any(j == i for j in new_neighbors):
+            raise RuntimeError(f"node {i}: self-loop in augmented set")
+        if any(j < 0 for j in new_neighbors):
+            raise RuntimeError(f"node {i}: -1 sentinel in augmented set")
+
+        new_ei[i] = np.asarray(new_neighbors, dtype=np.int64)
+        new_ef[i] = np.asarray(
+            [float(D[i, j]) for j in new_neighbors], dtype=np.float32
+        )
+
+    # Recompute inverse edge index from scratch (the base inverse is
+    # now stale — we changed the per-node candidate sets).
+    inverse_flat = _recompute_inverse_edge_index(new_ei, n)
+    return (
+        new_ei.reshape(1, n, _N_EDGES),
+        new_ef.reshape(1, n, _N_EDGES),
+        inverse_flat.reshape(1, n, _N_EDGES),
+    )
+
+
+def predict_edge_scores_augmented(
+    model,
+    coords: np.ndarray,
+    tour_perm: list[int],
+    base_edge_index: np.ndarray,
+    base_edge_feat: np.ndarray,
+    base_inverse_edge_index: np.ndarray,
+    device: str = "cuda",
+) -> np.ndarray:
+    """One-shot helper: build the augmented graph for ``tour_perm`` and score it.
+
+    Wraps :func:`build_tour_augmented_features` + :func:`predict_edge_scores`.
+    Returns the symmetric ``(n, n)`` score matrix where ``S[i, j]`` is the
+    NeuroLKH score (in (0, 1]) of edge ``(i, j)`` *given the augmented
+    candidate set at node i* — i.e. the per-node softmax is over the
+    augmented 20 slots, not the original 20-NN. Edges outside the union
+    of the augmented graph are ``NaN``.
+
+    Args:
+        model: A loaded :class:`SparseGCNModel` (eval mode).
+        coords: ``(n, 2)`` Euclidean coordinates.
+        tour_perm: Closed-cycle permutation of length ``n``.
+        base_edge_index: ``(1, n, 20)`` int array from
+            :func:`generate_20nn_features`.
+        base_edge_feat: ``(1, n, 20)`` float32 array from
+            :func:`generate_20nn_features`.
+        base_inverse_edge_index: Unused; accepted for API symmetry.
+        device: ``"cuda"`` or ``"cpu"``.
+
+    Returns:
+        ``(n, n)`` float64 symmetric score matrix.
+    """
+    aug_ei, aug_ef, aug_iei = build_tour_augmented_features(
+        coords,
+        base_edge_index=base_edge_index,
+        base_edge_feat=base_edge_feat,
+        base_inverse_edge_index=base_inverse_edge_index,
+        tour_perm=tour_perm,
+    )
+    return predict_edge_scores(
+        model, coords, aug_ei, aug_ef, aug_iei, device=device
+    )
